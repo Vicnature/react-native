@@ -22,11 +22,13 @@ const Tabs = ({ tabs, activeTab, setActiveTab }) => {
         data={tabs}
         horizontal
         showsHorizontalScrollIndicator={false}
+
+        //shows how to render the individual tabs(about,qualifications,responsibilities)
         renderItem={({ item }) => (
           <TabButton
             name={item}
             activeTab={activeTab}
-            onHandleSearchType={() => setActiveTab(item)}
+            onHandleSearchType={() => setActiveTab(item)} //set the current search parameter to the active tab
           />
         )}
         contentContainerStyle={{ columnGap: SIZES.small / 2 }}
