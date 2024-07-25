@@ -4,7 +4,7 @@ import {useFonts} from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
 // make splash screen visible when the app is initially launched
-SplashScreen.preventAutoHideAsync()
+// SplashScreen.preventAutoHideAsync()
 
 const Layout=()=>{
     const [fontsLoaded]=useFonts({
@@ -15,11 +15,10 @@ const Layout=()=>{
 
     // show homescreen only if the home page has been loaded
     const onLayoutRootView=useCallback(async()=>{
-        if(fontsLoaded){
-            await SplashScreen.hideAsync()
-        }
-
-        if(!fontsLoaded) return null
+        // if(fontsLoaded){
+        //     await SplashScreen.hideAsync()
+        // }
+        // if(!fontsLoaded) return null
     },[fontsLoaded])
     return <Stack onLayout={onLayoutRootView}/>
 }
