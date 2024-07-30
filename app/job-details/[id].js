@@ -7,7 +7,7 @@ import {
 	ActivityIndicator,
 	RefreshControl,
 } from "react-native";
-import { Stack, useRouter, useSearchParams } from "expo-router";
+import { Stack, useRouter,useLocalSearchParams} from "expo-router";
 import { useCallback, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import {
@@ -22,7 +22,7 @@ import { COLORS, icons, SIZES } from "../../constants";
 import useFetch from "../../hook/useFetch";
 
 const JobDetails = () => {
-	// const params = useSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
+	// const params = useLocalSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
 	const route = useRoute();
 	const { id } = route.params;
 	const router = useRouter(); //allow to push to another route
@@ -34,7 +34,11 @@ const JobDetails = () => {
 	const [refreshing, setRefreshing] = useState(false);
 	const tabs = ["About", "Qualifications", "Responsibilities"];
 	const [activeTab, setActiveTab] = useState(tabs[0]);
-	const onRefresh = () => {};
+	const onRefresh = useCallback(()=>{
+		setRefreshing(true)
+		refetch()
+		setRefreshing(false)
+	});
 
 	//delegates the display of specific job detail types(qualifications,responsibilities and about to the necessary components)
 	const displayTabContent = () => {
@@ -96,7 +100,7 @@ const JobDetails = () => {
 						<ActivityIndicator size="large" color={COLORS.primary} />
 					) : error ? (
 						<Text>
-							The job details are currently unavailable.Kindly try again later.
+							Further details about this job are currently unavailable.Please wait for some time and check again later.
 						</Text>
 					) : data.length === 0 ? (
 						<Text>No data</Text>
@@ -121,7 +125,7 @@ const JobDetails = () => {
 				</ScrollView>
 
                 {/* can be clicked to take you the job's application page */}
-                <JobFooter url={data[0]?.job_google_link ?? 'https://careers.google.com/jobs.results'}/>
+                {data && <JobFooter url={data[0]?.job_google_link ?? 'https://careers.google.com/jobs.results'}/>}
 			</>
 		</SafeAreaView>
 	);

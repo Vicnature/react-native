@@ -10,7 +10,10 @@ const useFetch = (endpoint, query) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const rapidApiKey = "7d1e92351dmshe786ad9a57d7051p147190jsn13457f868a93";
+	// const rapidApiKey = "7d1e92351dmshe786ad9a57d7051p147190jsn13457f868a93";
+	const rapidApiKey = "22faf0f14dmsh76cff1a6b8b43d2p1cdd93jsn2f0797d4bdb6";
+	// const rapidApiKey = "ff9ce63dcemsh8ed272dfb5baf99p16dd05jsn3059db53edef";
+	// const rapidApiKey = "00cca67dd1msh98ffc1c33478a0ap1ed7c5jsn89e80f8efd6a";
 	const options = {
 		method: "GET",
 		url: `https://jsearch.p.rapidapi.com/${endpoint}`,

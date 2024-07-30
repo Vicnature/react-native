@@ -13,6 +13,7 @@ import { COLORS, icons, images, SIZES } from "../constants";
 
 const Home = () => {
 	const router = useRouter();
+    const [searchTerm, setSearchTerm] = useState("")
 
 	return (
 		// navigation bar
@@ -34,7 +35,9 @@ const Home = () => {
 			{/*scrollable component */}
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<View style={{ flex: 1, padding: SIZES.medium }}>
-					<Welcome />
+					<Welcome searchTerm={searchTerm} setSearchTerm={setSearchTerm} handleClick={()=>{if(searchTerm){
+                        router.push(`/search/${searchTerm}`)
+                    }}}/>
 					<Popularjobs />
 					<Nearbyjobs />
 				</View>
