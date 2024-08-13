@@ -17,7 +17,7 @@ import { ScreenHeaderBtn, NearbyJobCard } from "../../components";
 import { COLORS, icons, SIZES } from "../../constants";
 import styles from "../../styles/search";
 import { useRoute } from "@react-navigation/native";
-
+import useFetch from "../../hook/useFetch";
 const JobSearch = () => {
 	// const params = useSearchParams();
 	const params = useLocalSearchParams();

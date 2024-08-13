@@ -20,7 +20,7 @@ import {
 } from "../../components";
 import { COLORS, icons, SIZES } from "../../constants";
 import useFetch from "../../hook/useFetch";
-
+import { ListOfAllCountries } from "../../hook/useFetch";
 const JobDetails = () => {
 	// const params = useLocalSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
 	const route = useRoute();
@@ -30,7 +30,6 @@ const JobDetails = () => {
 	const { data, isLoading, error, refetch } = useFetch("job-details", {
 		job_id: id,
 	}); //hit the job-details endpoint of RapidApi(Jseach) and provide the job-id(attained from the search parameters)
-
 	const [refreshing, setRefreshing] = useState(false);
 	const tabs = ["About", "Qualifications", "Responsibilities"];
 	const [activeTab, setActiveTab] = useState(tabs[0]);

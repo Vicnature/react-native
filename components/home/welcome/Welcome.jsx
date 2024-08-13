@@ -16,7 +16,7 @@ import { icons, SIZES } from "../../../constants";
 
 const jobTypes = ["Full-time", "Part-time", "Contractor"];
 
-const Welcome = ({ searchTerm, setSearchTerm, handleClick }) => {
+const Welcome = ({ searchTerm, setSearchTerm, handleClick,user }) => {
 	const router = useRouter();
 	const [activeJobType, setActiveJobType] = useState("Full-time");
 	const jobTypes = ["Full-time", "Part-time", "Contractor"];
@@ -26,8 +26,9 @@ const Welcome = ({ searchTerm, setSearchTerm, handleClick }) => {
 		<View>
       {/* Greetings,name and introductory text */}
 			<View style={styles.container}>
-				<Text style={styles.userName}>Hello Victor</Text>
-				<Text style={styles.welcomeMessage}>Get a great job now</Text>
+				<Text style={styles.userName}>{user && "Hello " + user.name}</Text>
+				{console.log("the user in this page is:",user)}
+				<Text style={styles.welcomeMessage}>It's about time you got a great job.</Text>
 			</View>
 
 			{/* search input */}
@@ -37,7 +38,7 @@ const Welcome = ({ searchTerm, setSearchTerm, handleClick }) => {
 						style={styles.searchInput}
 						value={searchTerm}
 						onChangeText={(text) => setSearchTerm(text)}
-						placeholder="Find What you want?"
+						placeholder="Search for any job(developer,engineer...)"
 					/>
 				</View>
 
