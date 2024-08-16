@@ -8,22 +8,23 @@
       "expo-router"
     ],
     "name": "project",
-    "slug": "project",
+    "slug": "group5developers",
     "extra": {
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": "28207a63-2560-4e83-8526-09babfbf49a0"
+        "projectId": "24f15009-cc35-41ea-84ff-ffec2a403f90"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/28207a63-2560-4e83-8526-09babfbf49a0"
+      "url": "https://u.expo.dev/24f15009-cc35-41ea-84ff-ffec2a403f90"
     },
     "android": {},
-    "ios": {}
+    "ios": {},
+    "owner": "group5developers"
   }
 }
