@@ -12,10 +12,6 @@ import MenuOptions from "../components/home/drawer/drawer"; // Import your drawe
 
 
 const Layout = () => {
-    const [fontsLoaded] = useFonts({
-        'DMBold': require('../assets/fonts/DMSans-Bold.ttf'),
-    });
-
     const drawer = useRef(null);
     const [drawerOpenedState, setDrawerOpenedState] = useState(false);
 
@@ -23,7 +19,7 @@ const Layout = () => {
         // if (fontsLoaded) {
         //     await SplashScreen.hideAsync();
         // }
-    }, [fontsLoaded]);
+    }, []);
 
     const navigationView = () => (
         <View style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
@@ -31,7 +27,7 @@ const Layout = () => {
         </View>
     );
 
-    if (!fontsLoaded) return null;
+    // if (!fontsLoaded) return null;
 
     const OpenAndCloseDrawer=()=>{
         if (drawerOpenedState) {

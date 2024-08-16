@@ -21,26 +21,28 @@ const App = () => {
 
 	const handleSignUp = async () => {
 		try {
-			await signUpWithEmail(email, password);
+			const signUp=await signUpWithEmail(email, password);
 			setMessage("attempting to sign you up...");
-			navigate.navigate("profile", { email: email });
+			if(signUp  && signUp!==null) navigate.navigate("profile", { email: email });
 			alert(
 				"Congratulations !! You have successfully registered an account with us!!Kindly create your profile to help you connect with employers.",
 			);
 		} catch (error) {
-			setMessage(error.message);
 			console.error("Error while attempting to sign up with an email:", error);
+			setMessage("Error signing up.Please provide the correct credentials and try again");
 		}
 	};
 
 	const handleSignIn = async () => {
 		try {
-			await signInWithEmail(email, password);
+			const signIn=await signInWithEmail(email, password);
 			console.log("signing in")
+			if(signIn && signIn!==null) navigate.navigate("profile", { email: email });
 			// await AsyncStorage.setItem("userSession", JSON.stringify(user));
 			setMessage("attempting to sign you in...");
 		} catch (error) {
-			console.log(error);
+			console.log("Error while attempting to sign in with an email:",error);
+			setMessage("Failed to sign you in.Please try again with the correct credentials.",error)
 		}
 	};
 	const handleGoogleAuthentication = async () => {
@@ -70,24 +72,24 @@ const App = () => {
 			<View style={globalStyles.submitBtn}>
 				<Button
 					color={COLORS.tertiary}
-					title="Sign Up"
+					title="Create an Account(sign up)"
 					onPress={handleSignUp}
 				/>
 			</View>
 			<View style={globalStyles.submitBtn}>
 				<Button
 					color={COLORS.tertiary}
-					title="Sign In"
+					title="Login to an existing account(sign in)"
 					onPress={handleSignIn}
 				/>
 			</View>
-			<View style={globalStyles.submitBtn}>
+			{/* <View style={globalStyles.submitBtn}>
 				<Button
 					color={COLORS.tertiary}
 					title="Sign In with  Google"
 					onPress={handleGoogleAuthentication}
 				/>
-			</View>
+			</View> */}
 			<Text>{message}</Text>
 		</View>
 	);

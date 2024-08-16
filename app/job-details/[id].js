@@ -7,8 +7,8 @@ import {
 	ActivityIndicator,
 	RefreshControl,
 } from "react-native";
-import { Stack, useRouter,useLocalSearchParams} from "expo-router";
-import { useCallback, useState } from "react";
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
+import { useCallback, useState, useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import {
 	Company,
@@ -20,25 +20,100 @@ import {
 } from "../../components";
 import { COLORS, icons, SIZES } from "../../constants";
 import useFetch from "../../hook/useFetch";
-import { ListOfAllCountries } from "../../hook/useFetch";
+import { fetchData } from "../../hook/useFetch";
+import { cacheJobData, getCachedJobs } from "../../utils/cache";
+import { readData, saveData } from "../../utils/sqlite";
+import { FirebaseJobCache } from "../db";
 const JobDetails = () => {
 	// const params = useLocalSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
 	const route = useRoute();
-	const { id } = route.params;
+	const { id, profession } = route.params;
 	const router = useRouter(); //allow to push to another route
 
-	const { data, isLoading, error, refetch } = useFetch("job-details", {
-		job_id: id,
-	}); //hit the job-details endpoint of RapidApi(Jseach) and provide the job-id(attained from the search parameters)
+	// const { data, isLoading, error, refetch } = useFetch("job-details", {
+	// 	job_id: id,
+	// }); //hit the job-details endpoint of RapidApi(Jseach) and provide the job-id(attained from the search parameters)
 	const [refreshing, setRefreshing] = useState(false);
 	const tabs = ["About", "Qualifications", "Responsibilities"];
 	const [activeTab, setActiveTab] = useState(tabs[0]);
-	const onRefresh = useCallback(()=>{
-		setRefreshing(true)
-		refetch()
-		setRefreshing(false)
+	const onRefresh = useCallback(() => {
+		setRefreshing(true);
+		fetch();
+		setRefreshing(false);
 	});
 
+	const [data, setData] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState(null);
+	useEffect(() => {
+		fetch();
+		// backupFetch();
+	}, []);
+
+	const fetch = async () => {
+		try {
+			setIsLoading(true);
+			console.log(
+				"attempting to fetch job",
+				id,
+				"'s job details from the local fileSystem cache",
+			);
+
+			const dataArray = [];
+			const cachedJobDetails = await readData(
+				`disintegratedJobDetails_${profession}_${id}`,
+			);
+			if (cachedJobDetails) {
+				console.log("Details for this job are:", Object.entries(cachedJobDetails));
+				dataArray.push(cachedJobDetails);
+				console.log("job highlights are of type:", typeof(cachedJobDetails));
+				if(dataArray.length>0) setData(dataArray);
+			} else {
+				throw new Error("No cached data found, triggering backup fetch");
+			}
+
+			setIsLoading(false);
+		} catch (e) {
+			console.error(
+				"Failed to get this individual job's details from the local cache",
+				e,
+			);
+			backupFetch();
+		}
+	};
+
+	const backupFetch = async () => {
+		try {
+			setIsLoading(true);
+			const individualJobDetails = await fetchData("job-details", {
+				job_id: id,
+			});
+			if (individualJobDetails && individualJobDetails !== null) {
+				setData(individualJobDetails);
+				console.log(
+					"job highlights",
+					Object.keys(individualJobDetails[0].job_highlights),
+				);
+				console.log(
+					"job highlights are of type:",
+					typeof individualJobDetails[0].job_highlights,
+				);
+				console.log("backup fetch used to get job details");
+			}
+
+			await saveData(
+				JSON.stringify(individualJobDetails),
+				`disintegratedJobDetails_${profession}_${id}`,
+			);
+			await FirebaseJobCache(
+				individualJobDetails,
+				`disintegratedJobDetails_${profession}_${id}`,
+			);
+			setIsLoading(false);
+		} catch (e) {
+			console.error("Backup fetch failed", e);
+		}
+	};
 	//delegates the display of specific job detail types(qualifications,responsibilities and about to the necessary components)
 	const displayTabContent = () => {
 		switch (activeTab) {
@@ -46,18 +121,31 @@ const JobDetails = () => {
 				return (
 					<Specifics
 						title="Qualifications"
-						points={data[0].job_highlights?.Qualifications ?? ["N/A"]}
+						points={
+							data[0]?.job_highlights?.Qualifications ??
+							"No qualifications defined by the hiring company yet.Kindly check again later..."
+						}
 					/>
 				);
 			case "About":
 				return (
-					<JobAbout info={data[0].job_description ?? "No data provided"} />
+					<JobAbout
+						info={
+							data[0]?.job_description ??
+							"No information provided by the hiring company yet.Kindly check again later..."
+						}
+					/>
 				);
 			case "Responsibilities":
-				<Specifics
-					title="Responsibilities"
-					points={data[0].job_highlights?.Responsibilities ?? ["N/A"]}
-				/>;
+				return (
+					<Specifics
+						title="Responsibilities"
+						points={
+							data[0]?.job_highlights?.Responsibilities ??
+							"No Responsibilities defined for this job yet.Kindly check later..."
+						}
+					/>
+				);
 		}
 	};
 	return (
@@ -99,17 +187,18 @@ const JobDetails = () => {
 						<ActivityIndicator size="large" color={COLORS.primary} />
 					) : error ? (
 						<Text>
-							Further details about this job are currently unavailable.Please wait for some time and check again later.
+							Further details about this job are currently unavailable.Please
+							wait for some time and check again later.
 						</Text>
-					) : data.length === 0 ? (
+					) : data[0]?.length === 0 ? (
 						<Text>No data</Text>
 					) : (
 						<View style={{ padding: SIZES.medium, paddingBottom: 100 }}>
 							<Company
-								companyLogo={data[0].employer_logo}
-								jobTitle={data[0].job_title}
-								companyName={data[0].employer_name}
-								location={data[0].job_country}
+								companyLogo={data[0]?.employer_logo}
+								jobTitle={data[0]?.job_title}
+								companyName={data[0]?.employer_name}
+								location={data[0]?.job_country}
 							/>
 							<JobTabs
 								tabs={tabs}
@@ -123,8 +212,20 @@ const JobDetails = () => {
 					)}
 				</ScrollView>
 
-                {/* can be clicked to take you the job's application page */}
-                {data && <JobFooter url={data[0]?.job_google_link ?? 'https://careers.google.com/jobs.results'}/>}
+				{/* can be clicked to take you the job's application page */}
+				{data && (
+					<JobFooter
+						// job={data[0].job_id}
+						url={
+							data[0]?.job_apply_link
+								? data[0]?.job_apply_link
+								: "https://careers.google.com/jobs.results"
+
+							// data[0]?.job_google_link ? data[0]?.job_google_link : data[0]?.job_apply_link
+							// "https://careers.google.com/jobs.results"
+						}
+					/>
+				)}
 			</>
 		</SafeAreaView>
 	);

@@ -16,47 +16,94 @@ import { connectToDatabase, insertProfile, getProfile } from "../utils/sqlite";
 // import { Picker } from "@react-native-picker/picker";
 import { Picker } from "@react-native-picker/picker";
 import { getCachedLocationData } from "../utils/cache";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { writeUserData } from "./db";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Firestore } from "./db";
-export default function ProfileForm() {
-	useEffect(() => {
-		locationDropDown();
-	}, []);
+import { useFocusEffect } from "@react-navigation/native";
 
+export default function ProfileForm() {
 	const navigation = useNavigation();
 	const params = useRoute().params;
 	const [countries, setCountries] = useState([]);
 	const [userCountry, setUserCountry] = useState("");
-	const [job, setJob] = useState("");
-	const email = (params && params.email) || " ";
+	const [user, setUser] = useState([]);
+	const [email, setEmail] = useState("");
+	// const email = (params && params.email) || user.email ||" ";
+	useEffect(() => {
+		locationDropDown();
+	}, []);
+
+	useFocusEffect(
+		useCallback(() => {
+			authenticate();
+		}, []),
+	);
+
+	const authenticate = async () => {
+		try {
+			console.log("checking for user session");
+			const userSession = await AsyncStorage.getItem("userSession");
+			if (userSession !== null) {
+				const user = JSON.parse(userSession);
+				if (user) setEmail(user.email);
+				if (user) console.log("Email retrieved from the session in local storage.Email set to:", user.email);
+			} else if (
+				params &&
+				params.email !== undefined &&
+				params.email !== null
+			) {
+				setEmail(params.email);
+				console.log(
+					"Email retrieved from the params.Email set to:",
+					params.email,
+				);
+			} else {
+				navigation.navigate("form");
+				console.log(
+					"User has no session and no email has been found within the params.Redirecting back to authentication page",
+				);
+				alert(
+					"Kindly Sign up a new account or Sign in with an existing one to continue.",
+				);
+			}
+		} catch (error) {
+			console.error("Error retrieving session: ", error);
+		}
+	};
+
 	const saveProfile = async (values) => {
 		try {
-			console.log("Creating a user session");
+			await AsyncStorage.setItem(
+				"userSession",
+				JSON.stringify({ ...values, email }),
+			);
 			await Firestore({ ...values, email });
-			AsyncStorage.setItem("userSession", JSON.stringify({ ...values, email }));
-			navigation.navigate("index");
 			await writeUserData({ ...values, email });
-			const db = await connectToDatabase();
-			insertProfile(db, { ...values, email });
+			navigation.navigate("index");
+			// const db = await connectToDatabase();
+			// insertProfile(db, { ...values, email });
 		} catch (error) {
-			backupProfileSaver(values);
-			console.error(error);
+			// backupProfileSaver(values);
+			console.error(
+				"Could not insert profile into our databases using saveProfile function in profile.js",
+				error,
+			);
 		}
 	};
 
 	const backupProfileSaver = async (values) => {
 		try {
 			const db = await connectToDatabase();
-			insertProfile(db, { ...values, email });
-			await Firestore({ ...values, email });
-			console.log("Creating a user session");
-			AsyncStorage.setItem("userSession", JSON.stringify({ ...values, email }));
-			navigation.navigate("index");
 			await writeUserData({ ...values, email });
 			await Firestore({ ...values, email });
+			await AsyncStorage.setItem(
+				"userSession",
+				JSON.stringify({ ...values, email }),
+			);
+			insertProfile(db, { ...values, email });
+			navigation.navigate("index");
 		} catch (error) {
 			console.error(error);
 		}
@@ -64,22 +111,42 @@ export default function ProfileForm() {
 
 	const locationDropDown = async () => {
 		try {
-			const countries = await getCachedLocationData("locationData");
 			const userCountry = await getCachedLocationData("userCountry");
-			const countriesArray = Object.entries(countries.sort());
-			setCountries(countriesArray);
-
 			if (userCountry) {
+				console.log(
+					"there is a country for the user",
+					userCountry,
+					"it has a type of",
+					typeof userCountry,
+				);
 				setUserCountry(userCountry);
 			}
+			const countries = await getCachedLocationData("locationData");
+			const countriesArray = Object.entries(countries.sort());
+			setCountries(countriesArray);
 		} catch (error) {
 			console.error(error);
 		}
 	};
+	if (userCountry === "") {
+		return (
+			<View>
+				<Text>Loading the profile form...</Text>
+			</View>
+		); // or some loading spinner
+	}
+
 	return (
 		<View>
 			<Formik
-				initialValues={{ name: "", contact: "", profession: "" }}
+				initialValues={{
+					// name: "Btech IT Student",
+					// contact: "07",
+					// profession: "Student",
+					location: userCountry,
+					// job_preference: "Full Time",
+					// resume_link:"My cv is a total lie.And yours is too!!"
+				}} // Add location here
 				onSubmit={(values) => {
 					console.log(values);
 					saveProfile(values);
@@ -124,10 +191,10 @@ export default function ProfileForm() {
 						{/* <TouchableOpacity style={globalStyles.input}> */}
 						<Picker
 							style={globalStyles.pickers}
-							// selectedValue={props.values.location}
-							selectedValue={userCountry}
+							selectedValue={props.values.location}
+							// selectedValue={userCountry}
 							onValueChange={(itemValue) => {
-								setUserCountry(itemValue);
+								// setUserCountry(itemValue)
 								props.setFieldValue("location", itemValue);
 							}}
 						>
@@ -147,10 +214,10 @@ export default function ProfileForm() {
 							}
 						>
 							<Picker.Item label="Select Your Job Preference" value="" />
-							<Picker.Item label="Full Time" value="Full Time" />
-							<Picker.Item label="Part Time" value="Part Time" />
-							<Picker.Item label="Remote" value="Remote" />
-							<Picker.Item label="Freelance" value="Freelance" />
+							<Picker.Item label="Full Time" value="FULLTIME" />
+							<Picker.Item label="Part Time" value="PARTTIME" />
+							<Picker.Item label="Contractual Jobs" value="CONTRACTOR" />
+							<Picker.Item label="Intern" value="INTERN" />
 						</Picker>
 						{/* </TouchableOpacity> */}
 						<View style={globalStyles.submitBtn}>

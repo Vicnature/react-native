@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signOutFromFirebase } from "../../../app/auth"
+import { deleteFile } from "../../../utils/sqlite";
 const DATA = [
 	{
 		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -25,11 +26,11 @@ const DATA = [
 		title: "My Profile",
 		url: "profile",
 	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-		title: "Favorite Jobs",
-		url: "",
-	},
+	// {
+	// 	id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
+	// 	title: "Favorite Jobs",
+	// 	url: "favorites",
+	// },
 	{
 		id: "58694a0f-3da1-471f-bd96-145571e29d72",
 		title: "Sign Out",
@@ -60,6 +61,8 @@ const MenuOptions = ({handlePress}) => {
 				handlePress()
 				signOutFromFirebase()
 				AsyncStorage.removeItem('userSession');
+				await deleteFile("fullDisintegratedJobDetails")
+				await deleteFile("fullDisintegratedJobDetails_2")
 				console.log("User signed out and session cleared!");
 			}
 		}catch(error)

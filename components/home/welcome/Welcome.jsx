@@ -14,21 +14,22 @@ import { useRouter } from "expo-router";
 import styles from "./welcome.style";
 import { icons, SIZES } from "../../../constants";
 
-const jobTypes = ["Full-time", "Part-time", "Contractor"];
+// const jobTypes = ["Full-time", "Part-time", "Contractor"];
 
-const Welcome = ({ searchTerm, setSearchTerm, handleClick,user }) => {
+const Welcome = ({ searchTerm, setSearchTerm, handleClick, user }) => {
 	const router = useRouter();
 	const [activeJobType, setActiveJobType] = useState("Full-time");
-	const jobTypes = ["Full-time", "Part-time", "Contractor"];
+	const jobTypes = [ "Full Time","Part Time","Contractor", "Intern",];
 
 	return (
-		
 		<View>
-      {/* Greetings,name and introductory text */}
+			{/* Greetings,name and introductory text */}
 			<View style={styles.container}>
 				<Text style={styles.userName}>{user && "Hello " + user.name}</Text>
-				{console.log("the user in this page is:",user)}
-				<Text style={styles.welcomeMessage}>It's about time you got a great job.</Text>
+				{/* {console.log("the user in this page is:", user)} */}
+				<Text style={styles.welcomeMessage}>
+					It's about time you got a great job.
+				</Text>
 			</View>
 
 			{/* search input */}
@@ -67,7 +68,7 @@ const Welcome = ({ searchTerm, setSearchTerm, handleClick,user }) => {
 							<Text style={styles.tabText(activeJobType, item)}>{item}</Text>
 						</TouchableOpacity>
 					)}
-					keyExtractor={(item) => item}//extracts the key to be used while iterating over the job types
+					keyExtractor={(item) => item} //extracts the key to be used while iterating over the job types
 					contentContainerStyle={{ rowGap: SIZES.small }} //creates a uniform gap between the job types
 					// horizontal
 				/>

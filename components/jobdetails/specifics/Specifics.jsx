@@ -12,12 +12,23 @@ const Specifics = ({ title, points }) => {
 
 			{/* shows the list of details for the specific tab chosen */}
       <View style={styles.pointsContainer}>
-				{points.map((item, index) => (
+				{/* {points?.map((item, index) => (
 					<View style={styles.pointWrapper} key={item + index}>
 						<View style={styles.pointDot} />
 						<Text style={styles.pointText}>{item}</Text>
 					</View>
-				))}
+				))} */}
+
+{Array.isArray(points) ? (
+					points.map((item, index) => (
+						<View style={styles.pointWrapper} key={item + index}>
+							<View style={styles.pointDot} />
+							<Text style={styles.pointText}>{item}</Text>
+						</View>
+					))
+				) : (
+					<Text style={styles.pointText}>{points}</Text>
+				)}
 			</View>
 		</View>
 	);

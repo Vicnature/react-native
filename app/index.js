@@ -8,8 +8,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ListOfAllCountries } from "../hook/useFetch";
 import { cacheLocationData } from "../utils/cache";
 import GetUserCountry from "./sensors";
-
-import { connectToDatabase, getProfile } from "../utils/sqlite";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -17,11 +15,12 @@ const Home = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const navigation = useNavigation();
 	const [user, setUser] = useState({});
-
+	const [profession, setProfession] = useState("");
+	const [preferredJob, setPreferredJob] = useState("");
 	useEffect(() => {
-		retrieveListOfCountires();
 		authenticate();
-		userProfile();
+		retrieveListOfCountires();
+		// userProfile();
 	}, []);
 
 	useFocusEffect(
@@ -30,7 +29,6 @@ const Home = () => {
 		}, []),
 	);
 	const authenticate = async () => {
-		// navigation.navigate("form");
 		try {
 			console.log("checking for user session");
 			const userSession = await AsyncStorage.getItem("userSession");
@@ -38,7 +36,9 @@ const Home = () => {
 				// Session exists, user is signed in
 				const user = JSON.parse(userSession);
 				console.log("User session found: ", user);
-				setUser(user);
+				if (user) setUser(user);
+				if (user) setProfession(user?.profession);
+				if (user) setPreferredJob(user?.job_preference);
 			} else {
 				navigation.navigate("form");
 				console.log("No user session found!redirecting to authentication page");
@@ -62,13 +62,14 @@ const Home = () => {
 		}
 	};
 
-	const userProfile = async () => {
-		// const db = await connectToDatabase();
-		// const user = await getProfile(db);
-		// setUser("none");
-		// console.log("User successfully fetched from the database:",user[0]);
-		// if (user) setUser(user[0]);
-		// console.log(user[0])
+	const refreshData = async () => {
+		try{
+if(user && user!==null){
+	
+}
+		}catch(e){
+
+		}
 	};
 
 	return (
@@ -85,8 +86,9 @@ const Home = () => {
 							}
 						}}
 					/>
-					<Popularjobs />
-					<Nearbyjobs />
+					<Popularjobs query="7 figure salary" user={user}/>
+					<Nearbyjobs  query={profession} job_preference={preferredJob} user={user}/>
+					{/* <Nearbyjobs /> */}
 				</View>
 			</ScrollView>
 		</SafeAreaView>
