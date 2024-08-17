@@ -5,7 +5,7 @@ import axios from "axios";
 import { cacheJobData, getCachedJobs } from "../utils/cache";
 import { localJobDetailsStorage } from "../utils/sqlite";
 import { saveData, readData } from "../utils/sqlite";
-import { FirebaseJobCache } from "../app/db";
+import { FirebaseJobCache } from "../utils/db";
 // import {RAPID_API_KEY} from '@env'
 
 // query is an object that stores the user's search parameters.
@@ -69,7 +69,8 @@ export const fetchData = async (endpoint, query) => {
 	// const rapidApiKey = "ff9ce63dcemsh8ed272dfb5baf99p16dd05jsn3059db53edef";
 	// const rapidApiKey = "a525ccaca5mshae67f2d41f048c2p18c590jsnbda3a6854036";
 	// const rapidApiKey = "8b81915545mshb30fd70b73f6b9ap121db6jsnb18f7e153069";
-	const rapidApiKey = "d9058b9297mshf2efadb1e725a01p1dc0f1jsncb768d00703b";
+	// const rapidApiKey = "d9058b9297mshf2efadb1e725a01p1dc0f1jsncb768d00703b";
+	const rapidApiKey = "0926e1a80cmshbe4870ea9f4d91bp16c6c7jsn8246069fd191";
 	const options = {
 		method: "GET",
 		url: `https://jsearch.p.rapidapi.com/${endpoint}`,
@@ -106,7 +107,11 @@ export const ListOfAllCountries = async () => {
 	}
 };
 
-export const disintegrateJobData = async (data,IndividualJobName,FileName) => {
+export const disintegrateJobData = async (
+	data,
+	IndividualJobName,
+	FileName,
+) => {
 	try {
 		const jobSummary = [];
 		if (data) {
@@ -120,7 +125,7 @@ export const disintegrateJobData = async (data,IndividualJobName,FileName) => {
 					employer_name: job.employer_name,
 					employer_logo: job.employer_logo,
 					job_google_link: job.job_google_link,
-					job_apply_link: job.job_apply_link
+					job_apply_link: job.job_apply_link,
 				};
 				saveData(
 					JSON.stringify(individualJobDetails),
@@ -133,6 +138,7 @@ export const disintegrateJobData = async (data,IndividualJobName,FileName) => {
 				jobSummary.push(individualJobDetails);
 			});
 			saveData(JSON.stringify(jobSummary), FileName);
+			FirebaseJobCache(JSON.stringify(jobSummary), FileName);
 			if (jobSummary !== null) return jobSummary;
 		}
 		// console.log("Job disintegrated successfully", JSON.stringify(jobSummary));

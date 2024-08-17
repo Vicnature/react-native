@@ -20,11 +20,11 @@ import {
 	FirebaseJobCache,
 	retrieveJobsFromFirestoreCache,
 	getDocFromFirestoreDb,
-} from "../../../app/db";
+} from "../../../utils/db";
 import { getDisintegratedJobDetails } from "../../../utils/sqlite";
 import { readData } from "../../../utils/sqlite";
 
-const Popularjobs = ({query,user}) => {
+const Popularjobs = ({ query, user }) => {
 	const [data, setData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -39,17 +39,24 @@ const Popularjobs = ({query,user}) => {
 		try {
 			setIsLoading(true);
 			// Try to fetch from local cache first
-			const cachedData = await readData(`fullDisintegratedJobDetails_${user.profession}`);
-			if (cachedData && cachedData!==null) {
-				console.log("POPULAR JOBS:disintegratedJobDetails fetched from local cache successfully",(cachedData[0]))
+			const cachedData = await readData(
+				`fullDisintegratedJobDetails_${user.profession}`,
+			);
+			if (cachedData && cachedData !== null) {
+				// console.log("POPULAR JOBS:disintegratedJobDetails fetched from local cache successfully",(cachedData[0]))
 				setData(cachedData);
 				setIsLoading(false);
 				return; // Exit the function if cached data is found
-			}
-			else {
-				console.log("no job data in the local cache.Trying to fetch from firestore database")
-				const secondCache = await getDocFromFirestoreDb(`fullDisintegratedJobDetails_${user.profession}`);
-				if (secondCache && secondCache!==null) {
+			} else {
+				console.log(
+					"no job data in the local cache.Trying to fetch from firestore database",
+				);
+				// const secondCache = await getDocFromFirestoreDb(`jobDetails`,`fullDisintegratedJobDetails_${user.profession}`);
+				const secondCache = await getDocFromFirestoreDb(
+					`jobDetailsCache`,
+					`fullDisintegratedJobDetails_${user.profession}`,
+				);
+				if (secondCache && secondCache !== null) {
 					setData(secondCache);
 					setIsLoading(false);
 					return; // Exit the function if data is found in Firestore cache
@@ -66,10 +73,14 @@ const Popularjobs = ({query,user}) => {
 			// 	num_pages: "1",
 			// });
 
-			if (data && data!==null) {
+			if (data && data !== null) {
 				// Replenish cache with the fetched data
 				// await cacheJobData("jobSummary", data);
-				disintegrateJobData(data,`disintegratedJobDetails_${user.profession}`,`fullDisintegratedJobDetails_${user.profession}`);
+				disintegrateJobData(
+					data,
+					`disintegratedJobDetails_${user.profession}`,
+					`fullDisintegratedJobDetails_${user.profession}`,
+				);
 				setData(data);
 				setIsLoading(false);
 			}

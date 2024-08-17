@@ -36,7 +36,7 @@ export async function writeUserData({
 		"name",
 		name,
 	);
-	const writeToRealTimeDb=await set(ref(db, "userProfiles/"), {
+	const writeToRealTimeDb = await set(ref(db, "userProfiles/"), {
 		// user_id: id,
 		name: name,
 		email: email,
@@ -47,7 +47,8 @@ export async function writeUserData({
 		Link_to_resume: resume_link,
 	});
 
-	if (writeToRealTimeDb) console.log("Profile successfully sent to firebase realtime database")
+	if (writeToRealTimeDb)
+		console.log("Profile successfully sent to firebase realtime database");
 }
 
 // firebase db
@@ -92,8 +93,12 @@ export const Firestore = async ({
 			location: location,
 			Link_to_resume: resume_link,
 		});
-		if(docRef) console.log("Profile successfully stored in google's firestore database:",docRef);
-		if(docRef) return docRef
+		if (docRef)
+			console.log(
+				"Profile successfully stored in google's firestore database:",
+				docRef,
+			);
+		if (docRef) return docRef;
 	} catch (e) {
 		console.error("Error adding document to google firestore database: ", e);
 	}
@@ -104,10 +109,7 @@ export const FirebaseJobCache = async (data, documentName) => {
 	const db = getFirestore(app);
 	try {
 		const docRef = doc(db, "jobDetailsCache", documentName);
-
-		// const docRef = await setDoc(collection(db, "jobDetailsCache"), {
-		// 	jobDetails:data
-		// });
+		
 		await setDoc(docRef, {
 			jobDetails: data,
 		});
@@ -120,39 +122,49 @@ export const FirebaseJobCache = async (data, documentName) => {
 	}
 };
 
-export const retrieveJobsFromFirestoreCache = async () => {
+export const retrieveJobsFromFirestoreCache = async (firebaseDocumentName) => {
 	const app = initializeApp(firebaseConfig1);
 	const db = getFirestore(app);
-	const docRef = doc(db, "jobDetailsCache", "all-the-jobs");
+	const docRef = doc(db, "jobDetailsCache", `${firebaseDocumentName}`);
 
 	// Get a document, forcing the SDK to fetch from the offline cache.
 	try {
 		const doc = await getDocFromCache(docRef);
-		if (doc && doc !== null)
-			console.log("all-the-jobs successfully retrieved from firestore");
-		return doc.data();
+		if (doc && doc !== null) {
+			console.log("disintegrated job successfully retrieved from firestore");
+			return doc.data();
+		}
 		// Document was found in the cache. If no cached document exists,
 		// an error will be returned to the 'catch' block below.
 		//   console.log("Cached document data:", doc.data());
 	} catch (e) {
 		getDocFromFirestoreDb();
-		console.error("Error getting all-the-jobs from firestore offline cache.Currenlty checking online firestore database:", e);
+		console.error(
+			"Error getting all-the-jobs from firestore offline cache.Currenlty checking online firestore database:",
+			e,
+		);
 	}
 };
 
-export const getDocFromFirestoreDb = async (documentName) => {
+export const getDocFromFirestoreDb = async (collectionName, documentName) => {
 	try {
-		console.log("checking for the jobs in firestore online database");
+		console.log("Initializing Firebase app");
 		const app = initializeApp(firebaseConfig1);
 		const db = getFirestore(app);
-		const docRef = doc(db, "jobDetailsCache", documentName);
+		console.log(db)
+		const docRef = doc(db, collectionName, documentName);
+		console.log(`Fetching document ${documentName} from collection ${collectionName}`);
 		const docSnap = await getDoc(docRef);
 
 		if (docSnap.exists()) {
-			// console.log("Found all the jobs inside firestore database",docSnap.data())
+			// console.log(`Found ${documentName} inside firestore database, within ${collectionName}`, docSnap.data());
 			return docSnap.data();
+		} else {
+			console.log(`Document ${documentName} does not exist in collection ${collectionName}`);
+			return null;
 		}
 	} catch (e) {
-		console.error("Error getting all-the-jobs from firestore database:", e);
+		console.error("Error getting document from Firestore database:", e);
+		return null;
 	}
 };

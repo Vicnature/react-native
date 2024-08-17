@@ -23,7 +23,7 @@ import useFetch from "../../hook/useFetch";
 import { fetchData } from "../../hook/useFetch";
 import { cacheJobData, getCachedJobs } from "../../utils/cache";
 import { readData, saveData } from "../../utils/sqlite";
-import { FirebaseJobCache } from "../db";
+import { FirebaseJobCache } from "../../utils/db";
 const JobDetails = () => {
 	// const params = useLocalSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
 	const route = useRoute();

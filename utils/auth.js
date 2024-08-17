@@ -29,9 +29,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-// const auth = initializeAuth(app, {
-// 	persistence: getReactNativePersistence(AsyncStorage),
-// });
 
 
 const signUpWithEmail = async (email, password) => {
@@ -55,26 +52,6 @@ const signUpWithEmail = async (email, password) => {
 	}
 };
 
-// const signInWithEmail = async (email, password) => {
-// 	signInWithEmailAndPassword(auth, email, password)
-// 		.then((userCredential) => {
-// 			// Signed in
-// 			const user = userCredential.user;
-// 			// ...
-// 			if (user && user.email)
-// 				console.log(
-// 					user.email,
-// 					"successfully signed in using email and password",
-// 				);
-// 			return user;
-// 		})
-// 		.catch((error) => {
-// 			console.error(
-// 				"error encountered when signing in to firebase using",
-// 				error,
-// 			);
-// 		});
-// };
 
 const signInWithEmail = async (email, password) => {
 	try {
@@ -97,15 +74,6 @@ const signInWithEmail = async (email, password) => {
 	}
 };
 
-// const signOutFromFirebase = async () => {
-// 	signOut(auth)
-// 		.then(() => {
-// 			console.log("successfully signed out from firebase");
-// 		})
-// 		.catch((error) => {
-// 			console.log("error encountered while signing out from firebase", error);
-// 		});
-// };
 
 const signOutFromFirebase = async () => {
 	try {

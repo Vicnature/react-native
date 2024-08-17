@@ -18,7 +18,7 @@ import { icons, SIZES } from "../../../constants";
 
 const Welcome = ({ searchTerm, setSearchTerm, handleClick, user }) => {
 	const router = useRouter();
-	const [activeJobType, setActiveJobType] = useState("Full-time");
+	const [activeJobType, setActiveJobType] = useState("Intern");
 	const jobTypes = [ "Full Time","Part Time","Contractor", "Intern",];
 
 	return (

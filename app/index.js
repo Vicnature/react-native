@@ -7,16 +7,18 @@ import { COLORS, SIZES } from "../constants";
 import React, { useState, useEffect, useCallback } from "react";
 import { ListOfAllCountries } from "../hook/useFetch";
 import { cacheLocationData } from "../utils/cache";
-import GetUserCountry from "./sensors";
+import GetUserCountry from "../utils/sensors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { getDocFromFirestoreDb } from "../utils/db";
 
-const Home = () => {
+const Index = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const navigation = useNavigation();
 	const [user, setUser] = useState({});
 	const [profession, setProfession] = useState("");
 	const [preferredJob, setPreferredJob] = useState("");
+	const router = useRouter();
 	useEffect(() => {
 		authenticate();
 		retrieveListOfCountires();
@@ -26,8 +28,29 @@ const Home = () => {
 	useFocusEffect(
 		useCallback(() => {
 			authenticate();
+			// fetchFromFirestore()
 		}, []),
 	);
+
+	const fetchFromFirestore = async () => {
+		try {
+			// const secondCache = await getDocFromFirestoreDb(`jobDetails`,`fullDisintegratedJobDetails_${user.profession}`);
+			console.log("Attempting to fetch fromn firestore");
+			const secondCache = await getDocFromFirestoreDb(
+				"jobDetailsCache",
+				`fullDisintegratedJobDetails_${user?.profession}`,
+			);
+			if (secondCache && secondCache !== null) {
+				console.log(
+					"Data successfully retrieved from firestore db",
+					secondCache.jobDetails,
+				);
+				return; // Exit the function if data is found in Firestore cache
+			}
+		} catch (e) {
+			console.error("fetch From Firestore failed:", e);
+		}
+	};
 	const authenticate = async () => {
 		try {
 			console.log("checking for user session");
@@ -62,16 +85,6 @@ const Home = () => {
 		}
 	};
 
-	const refreshData = async () => {
-		try{
-if(user && user!==null){
-	
-}
-		}catch(e){
-
-		}
-	};
-
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
 			<ScrollView showsVerticalScrollIndicator={false}>
@@ -86,8 +99,12 @@ if(user && user!==null){
 							}
 						}}
 					/>
-					<Popularjobs query="7 figure salary" user={user}/>
-					<Nearbyjobs  query={profession} job_preference={preferredJob} user={user}/>
+					<Popularjobs query="high salary" user={user} />
+					<Nearbyjobs
+						query={profession}
+						job_preference={preferredJob}
+						user={user}
+					/>
 					{/* <Nearbyjobs /> */}
 				</View>
 			</ScrollView>
@@ -95,4 +112,4 @@ if(user && user!==null){
 	);
 };
 
-export default Home;
+export default Index;
