@@ -55,7 +55,7 @@ const AuthenticationPage = () => {
 			const signIn = await signInWithEmail(email, password);
 			console.log("signing in");
 			if (signIn && signIn !== null)
-				navigate.navigate("profile", { email: email });
+				navigate.navigate("profile/index", { email: email });
 			// await AsyncStorage.setItem("userSession", JSON.stringify(user));
 			setMessage("attempting to sign you in...");
 		} catch (error) {

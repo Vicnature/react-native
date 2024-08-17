@@ -23,7 +23,7 @@ const customLabels = {
 };
 
 const Display = () => {
-	let { user, authenticate } = useContext(UserContext);
+	let { user, authenticate, signOut } = useContext(UserContext);
 	const [loading, setIsLoading] = useState(true);
 	const [message, setMessage] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
@@ -47,11 +47,10 @@ const Display = () => {
 				{loading && <ActivityIndicator size="large" color={COLORS.tertiary} />}
 				<Text style={styles.formMessage}>{message}</Text>
 				<View style={styles.Header}>
-					<Text style={styles.HeaderText}>JOB FINDERS APPLICATION</Text>
-					<Text style={styles.FormInstructions}>
-						This is your current profile.
-					</Text>
+					<Text style={styles.HeaderText}>USER PROFILE PAGE</Text>
+					{/* <Text style={styles.FormInstructions}>View and Edit your profile.</Text> */}
 				</View>
+
 				{Object.entries(user).map(([key, value]) => {
 					const label =
 						customLabels[key] || key.replace(/_/g, " ").toUpperCase();
@@ -74,11 +73,23 @@ const Display = () => {
 									source={require("../../assets/icons/left.png")}
 									style={styles.arrow_icon}
 								/>
-								<Text>Edit</Text>
+								<Text style={{color:COLORS.tertiary}}>Edit</Text>
 							</TouchableOpacity>
 						</View>
 					);
 				})}
+
+				<View style={styles.subHeading}>
+					<Text style={styles.subHeadingTitle} onPress={signOut}>
+						DELETE PROFILE
+					</Text>
+					<Text
+						style={styles.subHeadingInfo}
+						onPress={() => navigation.navigate("profile/index")}
+					>
+						EDIT EVERYTHING
+					</Text>
+				</View>
 
 				{/* Modal */}
 				<CustomModal
@@ -87,7 +98,7 @@ const Display = () => {
 					clickedValue={clickedValue}
 					clickedLabel={clickedLabel}
 					setIsLoading={setIsLoading}
-          setNewUser={setNewUser}
+					setNewUser={setNewUser}
 				/>
 			</View>
 		</ScrollView>
@@ -165,21 +176,47 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 	Header: {
-		padding: 10,
+		padding: 20,
 		fontWeight: "bold",
 		fontStyle: "italic",
 		borderRadius: 10,
 		width: "100%",
-		marginBottom: 50,
-		justifyContent: "center",
-		alignItems: "center",
+		marginBottom: 20,
+		// justifyContent: "center",
+		// alignItems: "center",
+		display: "flex",
+		flexDirection: "row",
+		flexWrap: "wrap",
+		// height:100,
+		backgroundColor: COLORS.tertiary,
 	},
 	HeaderText: {
 		fontSize: 25,
 		fontWeight: "bold",
-		color: COLORS.tertiary,
+		color: "white",
+		visible: "false",
 	},
 	FormInstructions: {
 		color: "gray",
+		fontSize: 20,
+	},
+
+	subHeading: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		// alignItems: "center",
+		paddingHorizontal: 20,
+		borderRadius: 10,
+		marginVertical: 20,
+		width: "100%",
+		fontSize: 20,
+	},
+	subHeadingTitle: {
+		color: "red",
+		fontWeight: "bold",
+	},
+	subHeadingInfo: {
+		color: "green",
+		fontWeight: "bold",
 	},
 });

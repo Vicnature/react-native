@@ -4,21 +4,23 @@ import { Stack, useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { Nearbyjobs, Popularjobs, Welcome } from "../components";
 import { COLORS, SIZES } from "../constants";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback,useContext } from "react";
 import { ListOfAllCountries } from "../hook/useFetch";
 import { cacheLocationData } from "../utils/cache";
 import GetUserCountry from "../utils/sensors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { getDocFromFirestoreDb } from "../utils/db";
-
+import { UserContext } from "./_layout";
 const Index = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const navigation = useNavigation();
-	const [user, setUser] = useState({});
+	// const [user, setUser] = useState({});
 	const [profession, setProfession] = useState("");
 	const [preferredJob, setPreferredJob] = useState("");
 	const router = useRouter();
+	let { authenticate,user } = useContext(UserContext);
+
 	useEffect(() => {
 		authenticate();
 		retrieveListOfCountires();
@@ -49,28 +51,6 @@ const Index = () => {
 			}
 		} catch (e) {
 			console.error("fetch From Firestore failed:", e);
-		}
-	};
-	const authenticate = async () => {
-		try {
-			console.log("checking for user session");
-			const userSession = await AsyncStorage.getItem("userSession");
-			if (userSession !== null) {
-				// Session exists, user is signed in
-				const user = JSON.parse(userSession);
-				console.log("User session found: ", user);
-				if (user) setUser(user);
-				if (user) setProfession(user?.profession);
-				if (user) setPreferredJob(user?.job_preference);
-			} else {
-				navigation.navigate("form");
-				console.log("No user session found!redirecting to authentication page");
-				alert(
-					"Kindly Sign up a new account or Sign in with an existing one to continue.",
-				);
-			}
-		} catch (error) {
-			console.error("Error retrieving session: ", error);
 		}
 	};
 

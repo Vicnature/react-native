@@ -1,127 +1,35 @@
 /** @format */
 
-// /** @format */
-
-// // /** @format */
-
-// // export default Layout;
-// import React, { useState, useEffect } from "react";
-// import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-// import { Stack, useNavigation } from "expo-router";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { signOutFromFirebase } from "./auth";
-// // import * as SplashScreen from "expo-splash-screen";
-
-// // SplashScreen.preventAutoHideAsync();
-
-// export const unstable_settings = {
-// 	// Ensure any route can link back to `/`
-// 	initialRouteName: "profile",
-// };
-
-// const Layout = () => {
-// 	const navigation = useNavigation();
-
-// 	const signOut = async () => {
-//     alert(
-//       "You have signed out of the application.Kindly sign in to continue using our services.Thankyou",
-//       );
-//       navigation.navigate("form")
-//       signOutFromFirebase();
-//       AsyncStorage.removeItem("userSession");
-//       console.log("User signed out and session cleared!");
-// 	};
-// 	return (
-// 		<Stack initialRouteName="display">
-// 			<Stack.Screen
-// 				name="index"
-// 				options={{
-// 					title: "JOB FINDERS",
-// 					headerStyle: { backgroundColor: "white" },
-// 					headerTintColor: "black",
-// 					headerRight: () => (
-// 						<View style={style.header_navigation}>
-// 							<Text
-// 								style={style.header_links}
-// 								onPress={() => navigation.navigate("display")}
-// 							>
-// 								PROFILE
-// 							</Text>
-// 							<Text style={style.header_links} onPress={signOut}>SIGN OUT</Text>
-// 						</View>
-// 					),
-// 				}}
-// 			/>
-// 			<Stack.Screen
-// 				name="profile"
-// 				options={{
-// 					title: "profile",
-// 					headerStyle: { backgroundColor: "white" },
-// 					headerTintColor: "black",
-// 				}}
-// 			/>
-// 			<Stack.Screen
-// 				name="form"
-// 				options={{
-// 					title: "Account Page",
-// 					headerStyle: { backgroundColor: "white" },
-// 					headerTintColor: "black",
-// 				}}
-// 			/>
-// 		</Stack>
-// 	);
-// };
-
-// export default Layout;
-
-// const style = StyleSheet.create({
-// 	header_navigation: {
-// 		flexDirection: "row",
-// 		justifyContent: "space-between",
-// 		paddingHorizontal: 20,
-// 		// paddingVertical:20,
-// 		// width:200,
-// 	},
-// 	header_links: {
-// 		fontSize: 16,
-// 		color: "black",
-// 		marginHorizontal: 10,
-// 	},
-// });
-
-/** @format */
-
-/** @format */
-
-/** @format */
-/** @format */
 import React, { createContext, useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import {
+	View,
+	Text,
+	StyleSheet,
+	SafeAreaView,
+	TouchableOpacity,
+	Image,
+} from "react-native";
 import { Stack } from "expo-router";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signOutFromFirebase } from "../utils/auth";
-import { ListOfAllCountries } from "../hook/useFetch";
-import { cacheLocationData } from "../utils/cache";
-import GetUserCountry from "../utils/sensors";
+import MenuModal from "../components/home/layout/MenuModal"; // Import the MenuModal component
+import { COLORS, icons } from "../constants";
 
 // Create a context
 export const UserContext = createContext();
 
 export const unstable_settings = {
-	// Ensure any route can link back to `/`
 	initialRouteName: "index",
 };
 
 const Layout = () => {
 	const [user, setUser] = useState({});
-	const [profession, setProfession] = useState("");
-	const [preferredJob, setPreferredJob] = useState("");
+	const [modalVisible, setModalVisible] = useState(false);
 	const navigation = useNavigation();
 
 	useEffect(() => {
 		authenticate();
-		retrieveListOfCountries();
 	}, []);
 
 	useFocusEffect(
@@ -132,102 +40,105 @@ const Layout = () => {
 
 	const authenticate = async () => {
 		try {
-			console.log("checking for user session");
 			const userSession = await AsyncStorage.getItem("userSession");
 			if (userSession !== null) {
 				const user = JSON.parse(userSession);
-				console.log("User session found: ", user);
 				setUser(user);
-				setProfession(user?.profession);
-				setPreferredJob(user?.job_preference);
 			} else {
-				navigation.navigate("form");
-				console.log(
-					"No user session found! Redirecting to authentication page",
-				);
-				alert(
-					"Kindly Sign up a new account or Sign in with an existing one to continue.",
-				);
+				navigation.navigate("profile/form");
 			}
 		} catch (error) {
 			console.error("Error retrieving session: ", error);
 		}
 	};
 
-	const retrieveListOfCountries = async () => {
-		try {
-			const countries = await ListOfAllCountries();
-			await cacheLocationData("locationData", countries);
-			const userCountry = await GetUserCountry();
-			await cacheLocationData("userCountry", userCountry);
-		} catch (error) {
-			console.error("Error when caching the location:", error);
-		}
-	};
-
 	const signOut = async () => {
-		alert(
-			"You have signed out of the application. Kindly sign in to continue using our services. Thank you.",
-		);
+		alert("You have signed out.");
 		signOutFromFirebase();
 		AsyncStorage.removeItem("userSession");
 		setUser({});
-		console.log("User signed out and session cleared!");
 		navigation.navigate("profile/form");
 	};
 
-	return (
-		<UserContext.Provider
-			value={{ user, profession, preferredJob, signOut, authenticate }}
+	const toggleModal = () => {
+		setModalVisible(!modalVisible);
+	};
+
+	const HeaderLeft = () => (
+		<TouchableOpacity onPress={toggleModal} style={{ marginHorizontal: 10 }}>
+			<Image source={icons.menu} style={{ width: 35, height: 24 }} />
+		</TouchableOpacity>
+	);
+
+	const HeaderRight = () => (
+		<TouchableOpacity
+			onPress={() => navigation.navigate("index")}
+			style={{ marginHorizontal: 10 }}
 		>
+			<Text
+				style={{
+					fontSize: 18,
+					fontWeight: "bold",
+					color: COLORS.tertiary,
+				}}
+			>
+				JOB FINDERS APPLICATION
+			</Text>
+		</TouchableOpacity>
+	);
+
+	return (
+		<UserContext.Provider value={{ user, signOut, authenticate }}>
 			<SafeAreaView style={{ flex: 1 }}>
-				<Stack initialRouteName="display">
+				<Stack initialRouteName="index">
 					<Stack.Screen
 						name="index"
 						options={{
-							title: "JOB FINDERS",
+							title: "",
 							headerStyle: { backgroundColor: "white" },
 							headerTintColor: "black",
-							headerRight: () => (
-								<View style={style.header_navigation}>
-									<Text
-										style={style.header_links}
-										onPress={() => navigation.navigate("profile/display")}
-									>
-										PROFILE
-									</Text>
-									<Text style={style.header_links} onPress={signOut}>
-										SIGN OUT
-									</Text>
-								</View>
+							headerLeft: HeaderLeft,
+							headerRight: HeaderRight,
+						}}
+					/>
+					<Stack.Screen
+						name="profile/index"
+						options={{
+							title: "",
+							headerStyle: { backgroundColor: "white" },
+							headerTintColor: "black",
+							headerLeft:()=>(
+								<View style={{width:"96%",justifyContent:"center",alignItems:"center",}}>
+								<Text style={{color:"gray",fontSize:15,fontWeight:"bold"}}>ACCOUNT REGISTRATION AND LOGIN PAGE</Text></View>
+							),
+							// headerRight: HeaderRight,
+						}}
+					/>
+					<Stack.Screen
+						name="profile/form"
+						options={{
+							title: "",
+							headerStyle: { backgroundColor: "white" },
+							headerTintColor: "black",
+							headerLeft:()=>(
+								<View style={{width:"96%",justifyContent:"center",alignItems:"center",}}>
+								<Text style={{color:"gray",fontSize:15,fontWeight:"bold"}}>ACCOUNT REGISTRATION AND LOGIN PAGE</Text></View>
 							),
 						}}
 					/>
 					<Stack.Screen
-						name="profile"
+						name="profile/display"
 						options={{
-							title: "Profile",
+							title: "",
 							headerStyle: { backgroundColor: "white" },
 							headerTintColor: "black",
+							headerLeft: HeaderLeft,
+							// headerRight: HeaderRight,
 						}}
 					/>
-					<Stack.Screen
-						name="form"
-						options={{
-							title: "Account Page",
-							headerStyle: { backgroundColor: "white" },
-							headerTintColor: "black",
-						}}
-					/>
-					<Stack.Screen
-						name="display"
-						options={{
-							title: "Your Profile",
-							headerStyle: { backgroundColor: "white" },
-							headerTintColor: "black",
-						}}
-					/>
+					{/* Other Stack.Screen components */}
 				</Stack>
+				<MenuModal visible={modalVisible} onClose={toggleModal} />
 			</SafeAreaView>
 		</UserContext.Provider>
 	);
@@ -236,11 +147,6 @@ const Layout = () => {
 export default Layout;
 
 const style = StyleSheet.create({
-	header_navigation: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		paddingHorizontal: 20,
-	},
 	header_links: {
 		fontSize: 16,
 		color: "black",
