@@ -93,7 +93,7 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 				{isLoading ? (
 					<ActivityIndicator size="large" color={COLORS.primary} />
 				) : error ? (
-					<Text>Something went wrong</Text>
+					<Text>An error occured while fetching jobs,please try again later.</Text>
 				) : Array.isArray(data) && data.length > 0 ? (
 					data
 						.filter((job) => job && job.job_id) // Filter out null/undefined items and items without job_id

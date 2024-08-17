@@ -11,6 +11,7 @@ import {
 	Dimensions,
 	TouchableOpacity,
 	ActivityIndicator,
+	ImageBackground
 } from "react-native";
 import {
 	signUpWithEmail,
@@ -77,6 +78,10 @@ const AuthenticationPage = () => {
 	};
 
 	return (
+		<ImageBackground
+			source={require('../../assets/images/glass (3).jpeg')}
+			style={globalStyles.background}
+		>
 		<View style={globalStyles.container}>
 			{loading && <ActivityIndicator size="large" color={COLORS.tertiary} />}
 			<Text style={globalStyles.formMessage}>{message}</Text>
@@ -122,6 +127,7 @@ const AuthenticationPage = () => {
 				<Text>MOBILE APP DEVELOPMENT. GROUP 5.</Text>
 			</View>
 		</View>
+		</ImageBackground>
 	);
 };
 
@@ -134,6 +140,11 @@ const globalStyles = StyleSheet.create({
 		flex: 1,
 		// backgroundColor: "white",
 		alignItems: "center",
+		justifyContent: "center",
+	},
+	background:{
+		flex:1,
+		resizeMode: "cover", // or "stretch"
 		justifyContent: "center",
 	},
 	formMessage: {

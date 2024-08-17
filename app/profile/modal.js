@@ -81,7 +81,7 @@ const CustomModal = ({
 			<View style={styles.modalBackground}>
 				<View style={styles.modalContainer}>
 					<Text style={styles.modalTitle}>
-						Enter New Value for {clickedValue}
+						Provide new {clickedLabel}
 					</Text>
 					<TextInput
 						style={styles.input}
@@ -115,20 +115,22 @@ const styles = StyleSheet.create({
 		padding: 10,
 		borderRadius: 10,
 		width: "85%",
-		alignItems: "center",
+		// alignItems: "center",
 	},
 	modalTitle: {
 		fontSize: 18,
-		marginBottom: 10,
+		marginVertical: 20,
+		fontWeight:"semi-bold",
 	},
 	input: {
-		height: 40,
+		height: 60,
 		borderColor: "gray",
 		borderWidth: 1,
 		borderRadius: 5,
 		marginBottom: 20,
 		paddingHorizontal: 10,
 		width: "100%",
+		fontSize:20,
 	},
 	buttonContainer: {
 		flexDirection: "row",

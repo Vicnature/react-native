@@ -31,8 +31,8 @@ const Popularjobs = ({ query, user }) => {
 
 	useEffect(() => {
 		fetch();
-		// retrieveJobsFromFirestoreCache();
-		// getDocFromFirestoreDb()
+		// setError("there is an error")
+		// setIsLoading(true)
 	}, [user]);
 
 	const fetch = async () => {
@@ -59,7 +59,7 @@ const Popularjobs = ({ query, user }) => {
 				if (secondCache && secondCache !== null) {
 					setData(secondCache);
 					setIsLoading(false);
-					return; // Exit the function if data is found in Firestore cache
+					return;
 				}
 			}
 
@@ -68,11 +68,6 @@ const Popularjobs = ({ query, user }) => {
 				query: query,
 				num_pages: "1",
 			});
-			// const data = await fetchData("search", {
-			// 	query: "Musician",
-			// 	num_pages: "1",
-			// });
-
 			if (data && data !== null) {
 				// Replenish cache with the fetched data
 				// await cacheJobData("jobSummary", data);
@@ -86,6 +81,7 @@ const Popularjobs = ({ query, user }) => {
 			}
 		} catch (error) {
 			console.error(error, "There was an error encountered when fetching data");
+			setError(error)
 		}
 	};
 
@@ -118,7 +114,7 @@ const Popularjobs = ({ query, user }) => {
 					//react built-in spinner that shows when something is loading
 					<ActivityIndicator size="large" color={COLORS.primary} />
 				) : error ? (
-					<Text>Nothing to show you yet</Text>
+					<Text>An error occured while fetching jobs.Please try again later.</Text>
 				) : (
 					<FlatList
 						data={data}

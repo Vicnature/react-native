@@ -89,7 +89,7 @@ const Layout = () => {
 
 	return (
 		<UserContext.Provider value={{ user, signOut, authenticate }}>
-			<SafeAreaView style={{ flex: 1 }}>
+			<SafeAreaView style={{ flex: 1,justifyContent:"center",}}>
 				<Stack initialRouteName="index">
 					<Stack.Screen
 						name="index"
