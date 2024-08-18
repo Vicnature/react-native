@@ -75,7 +75,7 @@ const Display = () => {
 									source={require("../../assets/icons/left.png")}
 									style={styles.arrow_icon}
 								/>
-								<Text style={{color:COLORS.tertiary}}>Edit</Text>
+								<Text style={{color:COLORS.tertiary,fontWeight:"bold",}}>Edit</Text>
 							</TouchableOpacity>
 						</View>
 					);
@@ -142,6 +142,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 		borderBottomColor: COLORS.secondary,
 		borderBottomWidth: 0.3,
+		flexWrap:"wrap"
 	},
 	profileDetails: {
 		justifyContent: "space-between",
