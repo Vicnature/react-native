@@ -41,7 +41,7 @@ export async function writeUserData({
 		name: name,
 		email: email,
 		phone_number: contact,
-		current_profession: profession,
+		profession: profession,
 		job_preference: job_preference,
 		location: location,
 		Link_to_resume: resume_link,
@@ -72,44 +72,85 @@ const firebaseConfig1 = {
 	measurementId: "G-VV4JPRQYWH",
 };
 
-export const Firestore = async ({
-	email,
-	job_preference,
-	location,
-	name,
-	contact,
-	profession,
-	resume_link,
-}) => {
+export const Firestore = async (
+	{ email, job_preference, location, name, contact, profession, resume_link },
+	collectionName,
+	documentName,
+) => {
+	console.log(
+		"attempting to write to firebase storage,collection: " +
+			collectionName +
+			" for " +
+			documentName,
+	);
 	const app = initializeApp(firebaseConfig1);
 	const db = getFirestore(app);
 	try {
-		const docRef = await addDoc(collection(db, "userProfiles"), {
+		const docData = {
 			name: name,
 			email: email,
 			phone_number: contact,
-			current_profession: profession,
+			profession: profession,
 			job_preference: job_preference,
 			location: location,
 			Link_to_resume: resume_link,
-		});
-		if (docRef)
+		};
+		const sentToFirebase = await setDoc(
+			doc(db, collectionName, documentName),
+			docData,
+		);
+		if (sentToFirebase) {
 			console.log(
-				"Profile successfully stored in google's firestore database:",
-				docRef,
+				"User profile for",
+				documentName,
+				" Sent to",
+				collectionName,
+				"Firestore dbase succesfully",
 			);
-		if (docRef) return docRef;
+			return sentToFirebase;
+		}
 	} catch (e) {
 		console.error("Error adding document to google firestore database: ", e);
 	}
 };
+// export const Firestore = async ({
+// 	email,
+// 	job_preference,
+// 	location,
+// 	name,
+// 	contact,
+// 	profession,
+// 	resume_link,
+// }) => {
+// 	const app = initializeApp(firebaseConfig1);
+// 	const db = getFirestore(app);
+// 	try {
+// 		const docRef = await addDoc(collection(db, "userProfiles"), {
+// 			name: name,
+// 			email: email,
+// 			phone_number: contact,
+// 			current_profession: profession,
+// 			job_preference: job_preference,
+// 			location: location,
+// 			Link_to_resume: resume_link,
+// 		});
+// 		if (docRef)
+// 			console.log(
+// 				"Profile successfully stored in google's firestore database:",
+// 				docRef,
+// 			);
+// 		if (docRef) return docRef;
+// 	} catch (e) {
+// 		console.error("Error adding document to google firestore database: ", e);
+// 	}
+// };
 
 export const FirebaseJobCache = async (data, documentName) => {
 	const app = initializeApp(firebaseConfig1);
 	const db = getFirestore(app);
 	try {
 		const docRef = doc(db, "jobDetailsCache", documentName);
-		
+
 		await setDoc(docRef, {
 			jobDetails: data,
 		});
@@ -148,19 +189,23 @@ export const retrieveJobsFromFirestoreCache = async (firebaseDocumentName) => {
 
 export const getDocFromFirestoreDb = async (collectionName, documentName) => {
 	try {
-		console.log("Initializing Firebase app");
 		const app = initializeApp(firebaseConfig1);
 		const db = getFirestore(app);
-		console.log(db)
 		const docRef = doc(db, collectionName, documentName);
-		console.log(`Fetching document ${documentName} from collection ${collectionName}`);
+		console.log(
+			`Fetching document ${documentName} from collection ${collectionName}`,
+		);
 		const docSnap = await getDoc(docRef);
 
 		if (docSnap.exists()) {
-			// console.log(`Found ${documentName} inside firestore database, within ${collectionName}`, docSnap.data());
+			console.log(
+				`Found ${documentName} inside firestore database, within ${collectionName}`,
+			);
 			return docSnap.data();
 		} else {
-			console.log(`Document ${documentName} does not exist in collection ${collectionName}`);
+			console.log(
+				`Document ${documentName} does not exist in collection ${collectionName}`,
+			);
 			return null;
 		}
 	} catch (e) {

@@ -17,13 +17,13 @@ import {
 import { COLORS, SIZES } from "../../constants";
 import { useNavigation } from "expo-router";
 import CustomModal from "./modal"; // Import the Modal component
+
 const customLabels = {
 	JOB_PREFERENCE: "Job Preference",
 	RESUME_LINK: "Resume Link",
 };
 
 const Display = () => {
-	let { user, authenticate, signOut } = useContext(UserContext);
 	const [loading, setIsLoading] = useState(true);
 	const [message, setMessage] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
@@ -31,8 +31,10 @@ const Display = () => {
 	const [clickedLabel, setClickedLabel] = useState("");
 	const [newUser, setNewUser] = useState(null);
 	const navigation = useNavigation();
+	const { user, authenticate,signOut } = useContext(UserContext);
 
 	useEffect(() => {
+		setIsLoading(true)
 		authenticate();
 		if (user && user.name) {
 			setIsLoading(false);

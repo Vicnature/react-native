@@ -1,7 +1,7 @@
 /** @format */
 
 // App.js
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
 	View,
 	TextInput,
@@ -11,7 +11,7 @@ import {
 	Dimensions,
 	TouchableOpacity,
 	ActivityIndicator,
-	ImageBackground
+	ImageBackground,
 } from "react-native";
 import {
 	signUpWithEmail,
@@ -21,7 +21,7 @@ import {
 import { openDatabase } from "react-native-sqlite-storage";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS, icons, images, SIZES } from "../../constants";
-import LoaderKit from "react-native-loader-kit";
+import { UserContext } from "../_layout";
 
 const AuthenticationPage = () => {
 	const [email, setEmail] = useState("");
@@ -29,6 +29,7 @@ const AuthenticationPage = () => {
 	const [message, setMessage] = useState("");
 	const navigate = useNavigation();
 	const [loading, setLoading] = useState(false);
+	const { setFirebaseUserId } = useContext(UserContext);
 
 	const handleSignUp = async () => {
 		try {
@@ -55,10 +56,13 @@ const AuthenticationPage = () => {
 			setMessage("Attempting to sign you in");
 			const signIn = await signInWithEmail(email, password);
 			console.log("signing in");
-			if (signIn && signIn !== null)
-				navigate.navigate("profile/index", { email: email });
+			if (signIn && signIn !== null) {
+				setFirebaseUserId(email)
+				// setFirebaseUserId(email)
+				// navigate.navigate("index");
+			}
 			// await AsyncStorage.setItem("userSession", JSON.stringify(user));
-			setMessage("attempting to sign you in...");
+			setMessage("Failed to sign you in...");
 		} catch (error) {
 			setLoading(false);
 			console.log("Error while attempting to sign in with an email:", error);
@@ -79,54 +83,56 @@ const AuthenticationPage = () => {
 
 	return (
 		<ImageBackground
-			source={require('../../assets/images/glass (3).jpeg')}
+			source={require("../../assets/images/glass (3).jpeg")}
 			style={globalStyles.background}
 		>
-		<View style={globalStyles.container}>
-			{loading && <ActivityIndicator size="large" color={COLORS.tertiary} />}
-			<Text style={globalStyles.formMessage}>{message}</Text>
-			<View style={globalStyles.Header}>
-				<Text style={globalStyles.HeaderText}>JOB FINDERS APPLICATION</Text>
-				<Text style={globalStyles.FormInstructions}>
-					Create new Account or Login to an existing one
-				</Text>
-			</View>
-			{/* <View>
+			<View style={globalStyles.container}>
+				{loading && <ActivityIndicator size="large" color={COLORS.tertiary} />}
+				<Text style={globalStyles.formMessage}>{message}</Text>
+				<View style={globalStyles.Header}>
+					<Text style={globalStyles.HeaderText}>JOB FINDERS APPLICATION</Text>
+					<Text style={globalStyles.FormInstructions}>
+						Create new Account or Login to an existing one
+					</Text>
+				</View>
+				{/* <View>
 				<Text  style={globalStyles.FormInstructions}>JOB FINDERS APPLICATION</Text>
 			</View> */}
-			<TextInput
-				autoComplete="email"
-				style={globalStyles.input}
-				placeholder="Email"
-				placeholderTextColor="gray"
-				value={email}
-				onChangeText={setEmail}
-				keyboardType="email-address"
-			/>
-			<TextInput
-				// autoComplete
-				style={globalStyles.input}
-				placeholder="Password (min 6 characters)"
-				placeholderTextColor="gray"
-				value={password}
-				onChangeText={setPassword}
-				secureTextEntry
-				keyboardType="visible-password"
-			/>
-			<TouchableOpacity style={globalStyles.submitBtn} onPress={handleSignUp}>
-				<Text style={globalStyles.buttonText}>Create an Account(sign up)</Text>
-			</TouchableOpacity>
+				<TextInput
+					autoComplete="email"
+					style={globalStyles.input}
+					placeholder="Email"
+					placeholderTextColor="gray"
+					value={email}
+					onChangeText={setEmail}
+					keyboardType="email-address"
+				/>
+				<TextInput
+					// autoComplete
+					style={globalStyles.input}
+					placeholder="Password (min 6 characters)"
+					placeholderTextColor="gray"
+					value={password}
+					onChangeText={setPassword}
+					secureTextEntry
+					keyboardType="visible-password"
+				/>
+				<TouchableOpacity style={globalStyles.submitBtn} onPress={handleSignUp}>
+					<Text style={globalStyles.buttonText}>
+						Create an Account(sign up)
+					</Text>
+				</TouchableOpacity>
 
-			<TouchableOpacity style={globalStyles.submitBtn} onPress={handleSignIn}>
-				<Text style={globalStyles.buttonText}>
-					Login to an existing account(sign in)
-				</Text>
-			</TouchableOpacity>
-			<View style={globalStyles.separating_line}></View>
-			<View style={globalStyles.Footer}>
-				<Text>MOBILE APP DEVELOPMENT. GROUP 5.</Text>
+				<TouchableOpacity style={globalStyles.submitBtn} onPress={handleSignIn}>
+					<Text style={globalStyles.buttonText}>
+						Login to an existing account(sign in)
+					</Text>
+				</TouchableOpacity>
+				<View style={globalStyles.separating_line}></View>
+				<View style={globalStyles.Footer}>
+					<Text>MOBILE APP DEVELOPMENT. GROUP 5.</Text>
+				</View>
 			</View>
-		</View>
 		</ImageBackground>
 	);
 };
@@ -142,8 +148,8 @@ const globalStyles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	background:{
-		flex:1,
+	background: {
+		flex: 1,
 		resizeMode: "cover", // or "stretch"
 		justifyContent: "center",
 	},

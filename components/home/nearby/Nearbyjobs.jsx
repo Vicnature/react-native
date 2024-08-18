@@ -20,19 +20,22 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const router = useRouter();
-
 	useEffect(() => {
 		fetch();
-	}, [user]);
+	}, [user,job_preference]);
 
 	const fetch = async () => {
 		try {
 			setIsLoading(true);
+			console.log("fetching jobs for", user.name);
 			const cachedData = await readData(
-				`fullDisintegratedJobDetails_2_${user?.profession}`,
+				`fullDisintegratedJobDetails_2_${user?.profession}_${user?.job_preference}`,
 			);
 			if (cachedData && cachedData !== null) {
-				// console.log("disintegratedJobDetails fetched from local cache successfully",Object.keys(cachedData[0]))
+				console.log(
+					"NEARBY JOBS:fullDisintegratedJobDetails_2_",user?.profession," fetched from local cache successfully",
+					Object.keys(cachedData[0]),
+				);
 				setData(cachedData);
 				setIsLoading(false);
 				return; // Exit the function if cached data is found
@@ -42,12 +45,12 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 				);
 				const secondCache = await getDocFromFirestoreDb(
 					"jobDetailsCache",
-					`fullDisintegratedJobDetails_2_${user?.profession}`,
+					`fullDisintegratedJobDetails_2_${user?.profession}_${user?.job_preference}`,
 				);
-				if (secondCache) {
-					setData(secondCache);
+				if (secondCache && secondCache!==null) {
+					setData(JSON.parse(secondCache.jobDetails));
 					setIsLoading(false);
-					return; // Exit the function if data is found in Firestore cache
+					return;
 				}
 			}
 
@@ -70,8 +73,8 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 				// const disintegrated=await disintegrateJobData(data,"fullDisintegratedJobDetails_2");
 				const disintegrated = await disintegrateJobData(
 					data,
-					`disintegratedJobDetails_${user.profession}`,
-					`fullDisintegratedJobDetails_2_${user.profession}`,
+					`disintegratedJobDetails_${user?.profession}_${user.job_preference}`,
+					`fullDisintegratedJobDetails_2_${user?.profession}_${user?.job_preference}`,
 				);
 				if (disintegrated) setIsLoading(false);
 			}
@@ -93,7 +96,9 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 				{isLoading ? (
 					<ActivityIndicator size="large" color={COLORS.primary} />
 				) : error ? (
-					<Text>An error occured while fetching jobs,please try again later.</Text>
+					<Text>
+						An error occured while fetching jobs,please try again later.
+					</Text>
 				) : Array.isArray(data) && data.length > 0 ? (
 					data
 						.filter((job) => job && job.job_id) // Filter out null/undefined items and items without job_id
@@ -103,7 +108,8 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 								key={`nearby-job-${job.job_id}`}
 								handleNavigate={() =>
 									router.push(
-										`/job-details/${job.job_id}?profession=${user?.profession}`,
+										`/job-details/${job.job_id}?profession=${user?.profession}&job_preference=${user?.job_preference}`
+										,
 									)
 								}
 							/>

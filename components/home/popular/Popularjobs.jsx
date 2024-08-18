@@ -23,12 +23,13 @@ import {
 } from "../../../utils/db";
 import { getDisintegratedJobDetails } from "../../../utils/sqlite";
 import { readData } from "../../../utils/sqlite";
-
-const Popularjobs = ({ query, user }) => {
+import { UserContext } from "../../../app/_layout";
+import { useContext } from "react";
+const Popularjobs = ({ query }) => {
 	const [data, setData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
-
+	const [error, setError] = useState("");
+	const { user } = useContext(UserContext);
 	useEffect(() => {
 		fetch();
 		// setError("there is an error")
@@ -39,25 +40,29 @@ const Popularjobs = ({ query, user }) => {
 		try {
 			setIsLoading(true);
 			// Try to fetch from local cache first
+			console.log("attempting to fetch data from local cache");
 			const cachedData = await readData(
 				`fullDisintegratedJobDetails_${user.profession}`,
 			);
 			if (cachedData && cachedData !== null) {
-				// console.log("POPULAR JOBS:disintegratedJobDetails fetched from local cache successfully",(cachedData[0]))
+				console.log(
+					"POPULAR JOBS:disintegratedJobDetails fetched from local cache successfully",
+					cachedData[0],
+				);
 				setData(cachedData);
 				setIsLoading(false);
 				return; // Exit the function if cached data is found
 			} else {
 				console.log(
-					"no job data in the local cache.Trying to fetch from firestore database",
+					"no job data in the local cache.Trying to fetch popular jobs from firestore database",
 				);
 				// const secondCache = await getDocFromFirestoreDb(`jobDetails`,`fullDisintegratedJobDetails_${user.profession}`);
 				const secondCache = await getDocFromFirestoreDb(
 					`jobDetailsCache`,
-					`fullDisintegratedJobDetails_${user.profession}`,
+					`fullDisintegratedJobDetails_${user?.profession}`,
 				);
 				if (secondCache && secondCache !== null) {
-					setData(secondCache);
+					setData(JSON.parse(secondCache.jobDetails));
 					setIsLoading(false);
 					return;
 				}
@@ -81,7 +86,7 @@ const Popularjobs = ({ query, user }) => {
 			}
 		} catch (error) {
 			console.error(error, "There was an error encountered when fetching data");
-			setError(error)
+			setError(error);
 		}
 	};
 
@@ -112,9 +117,11 @@ const Popularjobs = ({ query, user }) => {
 			<View style={styles.cardsContainer}>
 				{isLoading ? (
 					//react built-in spinner that shows when something is loading
-					<ActivityIndicator size="large" color={COLORS.primary} />
+					<ActivityIndicator size="large" color={COLORS.tertiary} />
 				) : error ? (
-					<Text>An error occured while fetching jobs.Please try again later.</Text>
+					<Text>
+						An error occured while fetching jobs.Please try again later.
+					</Text>
 				) : (
 					<FlatList
 						data={data}

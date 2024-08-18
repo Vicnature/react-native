@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import React,{useContext} from "react";
 import {
 	StyleSheet,
 	Button,
@@ -25,71 +25,75 @@ import { Firestore } from "../../utils/db";
 import { useFocusEffect } from "@react-navigation/native";
 import LoaderKit from "react-native-loader-kit";
 import { Platform } from 'react-native';
-
+import { UserContext } from "../_layout";
 export default function ProfilePage() {
 	const navigation = useNavigation();
 	const params = useRoute().params;
 	const [countries, setCountries] = useState([]);
 	const [userCountry, setUserCountry] = useState("");
-	const [user, setUser] = useState([]);
+	// const [user, setUser] = useState([]);
 	const [email, setEmail] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState("")
+	const{user,authenticate}=useContext(UserContext)
 	useEffect(() => {
+		// authenticate()
 		locationDropDown();
 	}, []);
 
 	useFocusEffect(
 		useCallback(() => {
-			// authenticate();
+			// authenticate()
+			addEmail()
 		}, []),
 	);
 
-	// const authenticate = async () => {
-	// 	try {
-	// 		console.log("checking for user session");
-	// 		const userSession = await AsyncStorage.getItem("userSession");
-	// 		if (userSession !== null) {
-	// 			const user = JSON.parse(userSession);
-	// 			if (user) setEmail(user.email);
-	// 			if (user)
-	// 				console.log(
-	// 					"Email retrieved from the session in local storage.Email set to:",
-	// 					user.email,
-	// 				);
-	// 		} else if (
-	// 			params &&
-	// 			params.email !== undefined &&
-	// 			params.email !== null
-	// 		) {
-	// 			setEmail(params.email);
-	// 			console.log(
-	// 				"Email retrieved from the params.Email set to:",
-	// 				params.email,
-	// 			);
-	// 		} else {
-	// 			navigation.navigate("form");
-	// 			console.log(
-	// 				"User has no session and no email has been found within the params.Redirecting back to authentication page",
-	// 			);
-	// 			alert(
-	// 				"Kindly Sign up a new account or Sign in with an existing one to continue.",
-	// 			);
-	// 		}
-	// 	} catch (error) {
-	// 		console.error("Error retrieving session: ", error);
-	// 	}
-	// };
+	const addEmail = async () => {
+		try {
+			console.log("checking for user session");
+			const userSession = await AsyncStorage.getItem("userSession");
+			if (userSession !== null) {
+				const user = JSON.parse(userSession);
+				if (user) setEmail(user.email);
+				if (user)
+					console.log(
+						"Email retrieved from the session in local storage.Email set to:",
+						user.email,
+					);
+			} else if (
+				params &&
+				params.email !== undefined &&
+				params.email !== null
+			) {
+				setEmail(params.email);
+				console.log(
+					"Email retrieved from the params.Email set to:",
+					params.email,
+				);
+			} else {
+				navigation.navigate("form");
+				console.log(
+					"User has no session and no email has been found within the params.Redirecting back to authentication page",
+				);
+				alert(
+					"Kindly Sign up a new account or Sign in with an existing one to continue.",
+				);
+			}
+		} catch (error) {
+			console.error("Error retrieving session: ", error);
+		}
+	};
 
 	const saveProfile = async (values) => {
 		try {
 			setLoading(true)
 			setMessage("Creating your profile")
-			await AsyncStorage.setItem(
+			setEmail(params.email)
+			AsyncStorage.setItem(
 				"userSession",
 				JSON.stringify({ ...values, email }),
 			);
-			await Firestore({ ...values, email });
+			await Firestore({ ...values, email },"userProfiles",email);
 			await writeUserData({ ...values, email });
 			navigation.navigate("index");
 			// const db = await connectToDatabase();
@@ -109,7 +113,7 @@ export default function ProfilePage() {
 		try {
 			const db = await connectToDatabase();
 			await writeUserData({ ...values, email });
-			await Firestore({ ...values, email });
+			await Firestore({ ...values, email },"userProfiles",email);
 			await AsyncStorage.setItem(
 				"userSession",
 				JSON.stringify({ ...values, email }),

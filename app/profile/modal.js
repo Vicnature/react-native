@@ -52,18 +52,17 @@ const CustomModal = ({
 		try {
 			setIsLoading(true);
 			onClose();
-
 			if (user && user.name) {
+				// alert(user.phone_number)
 				// Clone the user object to avoid mutating the original
 				const updatedUser = { ...user };
 
 				// Update the value corresponding to the clicked label
 				updatedUser[clickedLabel] = inputValue;
-
 				// Save the updated user information to AsyncStorage
 				await AsyncStorage.setItem("userSession", JSON.stringify(updatedUser));
 				// Optionally update the value in Firestore or other databases
-				await Firestore(updatedUser);
+				await Firestore(updatedUser,"userProfiles",user?.email);
 				await writeUserData(updatedUser);
 				setNewUser(updatedUser);
 				// Navigate back to the display screen or perform other necessary actions
@@ -86,6 +85,7 @@ const CustomModal = ({
 					<TextInput
 						style={styles.input}
 						placeholder="Type here..."
+						placeholderTextColor="black"
 						value={inputValue}
 						onChangeText={setInputValue}
 					/>

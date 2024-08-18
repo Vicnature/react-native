@@ -24,10 +24,12 @@ import { fetchData } from "../../hook/useFetch";
 import { cacheJobData, getCachedJobs } from "../../utils/cache";
 import { readData, saveData } from "../../utils/sqlite";
 import { FirebaseJobCache } from "../../utils/db";
+import { UserContext } from "../_layout";
+import { useContext } from "react";
 const JobDetails = () => {
 	// const params = useLocalSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
 	const route = useRoute();
-	const { id, profession } = route.params;
+	const { id, profession, job_preference } = route.params;
 	const router = useRouter(); //allow to push to another route
 
 	// const { data, isLoading, error, refetch } = useFetch("job-details", {
@@ -45,12 +47,14 @@ const JobDetails = () => {
 	const [data, setData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const {user}=useContext(UserContext)
 	useEffect(() => {
 		fetch();
 		// backupFetch();
 	}, []);
 
 	const fetch = async () => {
+		console.log("user's job preference is",job_preference)
 		try {
 			setIsLoading(true);
 			console.log(
@@ -60,18 +64,23 @@ const JobDetails = () => {
 			);
 
 			const dataArray = [];
-			const cachedJobDetails = await readData(
+			const cachedJobDetails=job_preference==null?  await readData(
 				`disintegratedJobDetails_${profession}_${id}`,
+			): await readData(
+				`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
 			);
+			
 			if (cachedJobDetails) {
-				console.log("Details for this job are:", Object.entries(cachedJobDetails));
+				console.log(
+					"Details for this job are:",
+					Object.entries(cachedJobDetails),
+				);
 				dataArray.push(cachedJobDetails);
-				console.log("job highlights are of type:", typeof(cachedJobDetails));
-				if(dataArray.length>0) setData(dataArray);
-			} else {
+				console.log("job highlights are of type:", typeof cachedJobDetails);
+				if (dataArray.length > 0) setData(dataArray);
+			}else {
 				throw new Error("No cached data found, triggering backup fetch");
 			}
-
 			setIsLoading(false);
 		} catch (e) {
 			console.error(
@@ -100,16 +109,27 @@ const JobDetails = () => {
 				);
 				console.log("backup fetch used to get job details");
 			}
-
-			await saveData(
-				JSON.stringify(individualJobDetails),
-				`disintegratedJobDetails_${profession}_${id}`,
-			);
-			await FirebaseJobCache(
-				individualJobDetails,
-				`disintegratedJobDetails_${profession}_${id}`,
-			);
-			setIsLoading(false);
+			if (job_preference !== null) {
+				await saveData(
+					JSON.stringify(individualJobDetails),
+					`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
+				);
+				await FirebaseJobCache(
+					individualJobDetails,
+					`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
+				);
+				setIsLoading(false);
+			}else{
+				await saveData(
+					JSON.stringify(individualJobDetails),
+					`disintegratedJobDetails_${profession}_${id}`,
+				);
+				await FirebaseJobCache(
+					individualJobDetails,
+					`disintegratedJobDetails_${profession}_${id}`,
+				);
+				setIsLoading(false);
+			}
 		} catch (e) {
 			console.error("Backup fetch failed", e);
 		}

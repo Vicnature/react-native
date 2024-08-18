@@ -119,6 +119,7 @@ export const disintegrateJobData = async (
 			data.forEach((job) => {
 				const individualJobDetails = {
 					job_id: job.job_id,
+					job_employment_type:job.job_employment_type,
 					job_description: job.job_description,
 					job_highlights: job.job_highlights,
 					job_title: job.job_title,
