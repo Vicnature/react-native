@@ -42,9 +42,9 @@ export async function writeUserData({
 		email: email,
 		phone_number: contact,
 		profession: profession,
-		job_preference: job_preference,
+		job_preference: job_preference || "Full Time",
 		location: location,
-		Link_to_resume: resume_link,
+		Link_to_resume: resume_link || "None Provided",
 	});
 
 	if (writeToRealTimeDb)
@@ -55,11 +55,13 @@ export async function writeUserData({
 import {
 	collection,
 	addDoc,
+	deleteDoc,
 	setDoc,
 	doc,
 	getFirestore,
 	getDoc,
 	getDocFromCache,
+	deleteUser,
 } from "firebase/firestore";
 
 const firebaseConfig1 = {
@@ -91,9 +93,9 @@ export const Firestore = async (
 			email: email,
 			phone_number: contact,
 			profession: profession,
-			job_preference: job_preference,
+			job_preference: job_preference || "Full Time",
 			location: location,
-			Link_to_resume: resume_link,
+			Link_to_resume: resume_link || "none provided",
 		};
 		const sentToFirebase = await setDoc(
 			doc(db, collectionName, documentName),
@@ -113,37 +115,7 @@ export const Firestore = async (
 		console.error("Error adding document to google firestore database: ", e);
 	}
 };
-// export const Firestore = async ({
-// 	email,
-// 	job_preference,
-// 	location,
-// 	name,
-// 	contact,
-// 	profession,
-// 	resume_link,
-// }) => {
-// 	const app = initializeApp(firebaseConfig1);
-// 	const db = getFirestore(app);
-// 	try {
-// 		const docRef = await addDoc(collection(db, "userProfiles"), {
-// 			name: name,
-// 			email: email,
-// 			phone_number: contact,
-// 			current_profession: profession,
-// 			job_preference: job_preference,
-// 			location: location,
-// 			Link_to_resume: resume_link,
-// 		});
-// 		if (docRef)
-// 			console.log(
-// 				"Profile successfully stored in google's firestore database:",
-// 				docRef,
-// 			);
-// 		if (docRef) return docRef;
-// 	} catch (e) {
-// 		console.error("Error adding document to google firestore database: ", e);
-// 	}
-// };
+
 
 export const FirebaseJobCache = async (data, documentName) => {
 	const app = initializeApp(firebaseConfig1);
@@ -213,3 +185,19 @@ export const getDocFromFirestoreDb = async (collectionName, documentName) => {
 		return null;
 	}
 };
+
+
+export const deleteDocFromFirestore=async(documentName)=>{
+	const app = initializeApp(firebaseConfig1);
+    const db = getFirestore(app);
+	const auth = getAuth();
+	const user = auth.currentUser;
+    try {
+		await deleteDoc(doc(db, "userProfiles",documentName));
+        console.log(documentName,"'s account successfully deleted from firebase!");
+		deleteUser(user)
+		console.log("user deleted from firebase auth dbase")
+    } catch (e) {
+        console.error("Error deleting document: ", e);
+    }
+}

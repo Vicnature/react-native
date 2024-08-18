@@ -14,13 +14,7 @@ const useFetch = (endpoint, query) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const rapidApiKey = "7d1e92351dmshe786ad9a57d7051p147190jsn13457f868a93";
-	// const rapidApiKey = "22faf0f14dmsh76cff1a6b8b43d2p1cdd93jsn2f0797d4bdb6";
-	// const rapidApiKey = "00cca67dd1msh98ffc1c33478a0ap1ed7c5jsn89e80f8efd6a";
-	// const rapidApiKey = "ff9ce63dcemsh8ed272dfb5baf99p16dd05jsn3059db53edef";
-	// const rapidApiKey = "a525ccaca5mshae67f2d41f048c2p18c590jsnbda3a6854036";
-	// const rapidApiKey = "8b81915545mshb30fd70b73f6b9ap121db6jsnb18f7e153069";
-	// const rapidApiKey = "d9058b9297mshf2efadb1e725a01p1dc0f1jsncb768d00703b";
+	const rapidApiKey = "8c705d7b72msh0d61172f2a773a9p134547jsn262a22f9bda3";
 	const options = {
 		method: "GET",
 		url: `https://jsearch.p.rapidapi.com/${endpoint}`,
@@ -63,14 +57,7 @@ const useFetch = (endpoint, query) => {
 //fetchdata
 export const fetchData = async (endpoint, query) => {
 	console.log("attempting to fetch jobs");
-	// const rapidApiKey = "7d1e92351dmshe786ad9a57d7051p147190jsn13457f868a93";
-	// const rapidApiKey = "22faf0f14dmsh76cff1a6b8b43d2p1cdd93jsn2f0797d4bdb6";
-	// const rapidApiKey = "00cca67dd1msh98ffc1c33478a0ap1ed7c5jsn89e80f8efd6a";
-	// const rapidApiKey = "ff9ce63dcemsh8ed272dfb5baf99p16dd05jsn3059db53edef";
-	// const rapidApiKey = "a525ccaca5mshae67f2d41f048c2p18c590jsnbda3a6854036";
-	// const rapidApiKey = "8b81915545mshb30fd70b73f6b9ap121db6jsnb18f7e153069";
-	// const rapidApiKey = "d9058b9297mshf2efadb1e725a01p1dc0f1jsncb768d00703b";
-	const rapidApiKey = "0926e1a80cmshbe4870ea9f4d91bp16c6c7jsn8246069fd191";
+	const rapidApiKey = "8c705d7b72msh0d61172f2a773a9p134547jsn262a22f9bda3";
 	const options = {
 		method: "GET",
 		url: `https://jsearch.p.rapidapi.com/${endpoint}`,

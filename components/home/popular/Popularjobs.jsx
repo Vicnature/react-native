@@ -117,7 +117,7 @@ const Popularjobs = ({ query }) => {
 			<View style={styles.cardsContainer}>
 				{isLoading ? (
 					//react built-in spinner that shows when something is loading
-					<ActivityIndicator size="large" color={COLORS.tertiary} />
+					<ActivityIndicator size="large" color={COLORS.primary} />
 				) : error ? (
 					<Text>
 						An error occured while fetching jobs.Please try again later.

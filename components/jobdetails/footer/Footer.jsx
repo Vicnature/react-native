@@ -11,13 +11,13 @@ const Footer = ({ url,job }) => {
 	return (
 		<View style={styles.container}>
 			{/* button for liking a job.Can be implemented using localStorage */}
-			<TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
+			{/* <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
 				<Image
 					source={icons.heartOutline}
 					resizeMode="contain"
 					style={styles.likeBtnImage}
 				/>
-			</TouchableOpacity>
+			</TouchableOpacity> */}
 
 			{/* button used to apply for a given job */}
 			<TouchableOpacity

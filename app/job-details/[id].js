@@ -6,6 +6,7 @@ import {
 	SafeAreaView,
 	ActivityIndicator,
 	RefreshControl,
+	Share,
 } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useCallback, useState, useEffect } from "react";
@@ -26,6 +27,8 @@ import { readData, saveData } from "../../utils/sqlite";
 import { FirebaseJobCache } from "../../utils/db";
 import { UserContext } from "../_layout";
 import { useContext } from "react";
+
+
 const JobDetails = () => {
 	// const params = useLocalSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
 	const route = useRoute();
@@ -47,14 +50,14 @@ const JobDetails = () => {
 	const [data, setData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
-	const {user}=useContext(UserContext)
+	const { user } = useContext(UserContext);
 	useEffect(() => {
 		fetch();
 		// backupFetch();
 	}, []);
 
 	const fetch = async () => {
-		console.log("user's job preference is",job_preference)
+		console.log("user's job preference is", job_preference);
 		try {
 			setIsLoading(true);
 			console.log(
@@ -64,12 +67,13 @@ const JobDetails = () => {
 			);
 
 			const dataArray = [];
-			const cachedJobDetails=job_preference==null?  await readData(
-				`disintegratedJobDetails_${profession}_${id}`,
-			): await readData(
-				`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
-			);
-			
+			const cachedJobDetails =
+				job_preference == null
+					? await readData(`disintegratedJobDetails_${profession}_${id}`)
+					: await readData(
+							`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
+						);
+
 			if (cachedJobDetails) {
 				console.log(
 					"Details for this job are:",
@@ -78,7 +82,7 @@ const JobDetails = () => {
 				dataArray.push(cachedJobDetails);
 				console.log("job highlights are of type:", typeof cachedJobDetails);
 				if (dataArray.length > 0) setData(dataArray);
-			}else {
+			} else {
 				throw new Error("No cached data found, triggering backup fetch");
 			}
 			setIsLoading(false);
@@ -119,7 +123,7 @@ const JobDetails = () => {
 					`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
 				);
 				setIsLoading(false);
-			}else{
+			} else {
 				await saveData(
 					JSON.stringify(individualJobDetails),
 					`disintegratedJobDetails_${profession}_${id}`,
@@ -132,6 +136,20 @@ const JobDetails = () => {
 			}
 		} catch (e) {
 			console.error("Backup fetch failed", e);
+		}
+	};
+
+
+	const shareJobDetails = async () => {
+		try {
+			if (data && data != null) {
+				const result = await Share.share({
+					message:
+						`Checkout this job I have found on Job Finders Application !! \n ${data[0]?.job_apply_link}`,
+				});
+			}
+		} catch (e) {
+			console.log("Failed to share", e);
 		}
 	};
 	//delegates the display of specific job detail types(qualifications,responsibilities and about to the necessary components)
@@ -190,7 +208,7 @@ const JobDetails = () => {
 						<ScreenHeaderBtn
 							iconUrl={icons.share}
 							dimension="60%"
-							// handlePress={() => router.back()}
+							handlePress={shareJobDetails}
 						/>
 					),
 					headerTitle: "",

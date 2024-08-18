@@ -48,7 +48,7 @@ const MenuModal = ({ visible, onClose }) => {
 					>
 						<Text style={styles.optionText}>SIGN OUT</Text>
 					</TouchableOpacity>
-					<TouchableOpacity style={styles.optionButton} onPress={onClose}>
+					<TouchableOpacity style={styles.cancelButton} onPress={onClose}>
 						<Text style={styles.optionText}>CANCEL</Text>
 					</TouchableOpacity>
 				</View>
@@ -80,6 +80,8 @@ const styles = StyleSheet.create({
 		paddingVertical: 20,
 		borderRadius: 10,
 		alignItems: "center",
+		paddingHorizontal:"5%",
+		paddingVertical:"35%"
 	},
 	optionButton: {
 		paddingVertical: 15,
@@ -98,6 +100,21 @@ const styles = StyleSheet.create({
         shadowRadius: 3,
         elevation: 20,
 	},
+	cancelButton:{
+		paddingVertical: 15,
+		backgroundColor: COLORS.primary,
+		marginVertical: 10,
+		width:"90%",
+		borderRadius: 10,
+		justifyContent: "center",
+		alignItems: "center",
+		// shadowColor: "#000",
+		shadowColor:COLORS.black,
+		shadowOffset: { width: 10, height: 0 },
+		shadowOpacity: 0.1,
+		shadowRadius: 3,
+		elevation: 20,
+	},
 	optionText: {
 		fontSize: 25,
 		textAlign: "center",
@@ -109,7 +126,7 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		fontStyle: "italic",
 		width: "100%",
-		marginBottom: 50,
+		marginBottom: "20%",
 		// height:"10%",
 		// justifyContent: "center",
 		alignItems: "center",

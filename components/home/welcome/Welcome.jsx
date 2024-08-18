@@ -27,8 +27,11 @@ const Welcome = ({ searchTerm, setSearchTerm, handleClick, user }) => {
 			<View style={styles.container}>
 				<Text style={styles.userName}>{user && "Hello " + user.name}</Text>
 				{/* {console.log("the user in this page is:", user)} */}
+				{/* <Text style={styles.welcomeMessage}>
+					We are so glad you're here...
+				</Text> */}
 				<Text style={styles.welcomeMessage}>
-					It's about time you got a great job.
+					Let's get you a good job.
 				</Text>
 			</View>
 

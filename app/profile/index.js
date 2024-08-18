@@ -9,6 +9,7 @@ import {
 	Text,
 	ScrollView,
 	TouchableOpacity,
+	ImageBackground,
 	ActivityIndicator
 } from "react-native";
 import { Formik, connect } from "formik";
@@ -101,7 +102,7 @@ export default function ProfilePage() {
 		} catch (error) {
 			backupProfileSaver(values);
 			setLoading(false)
-			setMessage("Failed to create Profile.Try again with correct details.")
+			setMessage("Creation Failed.Fill all details and retry.")
 			console.error(
 				"Could not insert profile into our databases using saveProfile function in profile.js",
 				error,
@@ -153,6 +154,10 @@ export default function ProfilePage() {
 	}
 
 	return (
+		<ImageBackground
+			source={require("../../assets/images/whitebg (4).jpeg")}
+			style={globalStyles.background}
+		>
 		<View>
 			<Formik
 				initialValues={{
@@ -260,10 +265,16 @@ export default function ProfilePage() {
 				)}
 			</Formik>
 		</View>
+		</ImageBackground>
 	);
 }
 
 const globalStyles = StyleSheet.create({
+	background: {
+		flex: 1,
+		resizeMode: "cover", // or "stretch"
+		justifyContent: "center",
+	},
 	container: {
 		// flex: 1,  // Ensure the container fills the available space
 		// justifyContent: 'center',
@@ -340,7 +351,7 @@ const globalStyles = StyleSheet.create({
 		borderRadius: 10,
 		color: COLORS.tertiary,
 		width: '90%',
-		height: Platform.OS === 'ios' ? 150 : 1, // Adjust for iOS specifically
+		// height: Platform.OS === 'ios' ? 150 : 1, // Adjust for iOS specifically
 		// height:100,
 	},
 	Footer: {

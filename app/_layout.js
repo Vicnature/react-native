@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signOutFromFirebase } from "../utils/auth";
 import MenuModal from "../components/home/layout/MenuModal"; // Import the MenuModal component
 import { COLORS, icons } from "../constants";
-import { getDocFromFirestoreDb } from "../utils/db";
+import { getDocFromFirestoreDb,deleteDocFromFirestore } from "../utils/db";
 // Create a context
 export const UserContext = createContext();
 
@@ -49,6 +49,8 @@ const Layout = () => {
 				console.log("found user session",user)
 				setUser(user);
 				return;
+			}else{
+				navigation.navigate("profile/form")
 			}
 			if (firebaseUserId) {
 				console.log("looking for user on firestore");
@@ -68,6 +70,7 @@ const Layout = () => {
 
 	const signOut = async () => {
 		alert("You have signed out.Please log back in to view jobs.");
+		deleteDocFromFirestore(user.email)
 		signOutFromFirebase();
 		AsyncStorage.removeItem("userSession");
 		setUser({});
@@ -124,8 +127,7 @@ const Layout = () => {
 							headerStyle: { backgroundColor: "white" },
 							headerTintColor: "black",
 							headerLeft: () => {
-								if (!user)
-									return (
+								if (Object.keys(user).length === 0 ) return (
 										<View
 											style={{
 												width: "96%",
@@ -143,7 +145,7 @@ const Layout = () => {
 												ACCOUNT REGISTRATION AND LOGIN PAGE
 											</Text>
 										</View>
-									);
+									)
 								return (
 									<View
 										onPress={() => navigation.navigate("profile/display")}

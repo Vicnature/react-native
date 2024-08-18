@@ -34,25 +34,6 @@ const Index = () => {
 		}, []),
 	);
 
-	const fetchFromFirestore = async () => {
-		try {
-			// const secondCache = await getDocFromFirestoreDb(`jobDetails`,`fullDisintegratedJobDetails_${user.profession}`);
-			console.log("Attempting to fetch fromn firestore");
-			const secondCache = await getDocFromFirestoreDb(
-				"jobDetailsCache",
-				`fullDisintegratedJobDetails_${user?.profession}`,
-			);
-			if (secondCache && secondCache !== null) {
-				console.log(
-					"Data successfully retrieved from firestore db",
-					secondCache.jobDetails,
-				);
-				return; // Exit the function if data is found in Firestore cache
-			}
-		} catch (e) {
-			console.error("fetch From Firestore failed:", e);
-		}
-	};
 
 	const retrieveListOfCountires = async () => {
 		try {
