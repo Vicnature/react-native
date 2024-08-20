@@ -33,3 +33,4 @@ npx create-expo-app -e with-router
 
 ## Contact information
 - naylowreagan@gmail.com
+-ombebavictor22@gmail.com
