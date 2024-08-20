@@ -14,7 +14,7 @@ const useFetch = (endpoint, query) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const rapidApiKey = "8c705d7b72msh0d61172f2a773a9p134547jsn262a22f9bda3";
+	const rapidApiKey = "'a8eff050e5mshf564edb900d38efp102487jsnd71a7c0d6bd6";
 	const options = {
 		method: "GET",
 		url: `https://jsearch.p.rapidapi.com/${endpoint}`,
@@ -53,11 +53,13 @@ const useFetch = (endpoint, query) => {
 	return { data, isLoading, error, refetch };
 };
 
-//fetchdata
-//fetchdata
+
 export const fetchData = async (endpoint, query) => {
 	console.log("attempting to fetch jobs");
-	const rapidApiKey = "8c705d7b72msh0d61172f2a773a9p134547jsn262a22f9bda3";
+	const rapidApiKey = "'a8eff050e5mshf564edb900d38efp102487jsnd71a7c0d6bd6";
+	// const rapidApiKey = "'a8eff050e5mshf564edb900d38efp102487jsnd71a7c0d6bd6";
+	// const rapidApiKey = "'a8eff050e5mshf564edb900d38efp102487jsnd71a7c0d6bd6";
+	// const rapidApiKey = "'a8eff050e5mshf564edb900d38efp102487jsnd71a7c0d6bd6";
 	const options = {
 		method: "GET",
 		url: `https://jsearch.p.rapidapi.com/${endpoint}`,
@@ -106,7 +108,7 @@ export const disintegrateJobData = async (
 			data.forEach((job) => {
 				const individualJobDetails = {
 					job_id: job.job_id,
-					job_employment_type:job.job_employment_type,
+					job_employment_type: job.job_employment_type,
 					job_description: job.job_description,
 					job_highlights: job.job_highlights,
 					job_title: job.job_title,

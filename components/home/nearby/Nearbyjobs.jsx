@@ -56,16 +56,10 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 
 			// If both caches are empty, fetch from the endpoint
 			const data = await fetchData("search", {
-				// query: query,
 				query: user?.profession || query,
 				employment_types: job_preference,
 				num_pages: "1",
 			});
-			// const data = await fetchData("search", {
-			// 	query: "Mobile App Developer",
-			// 	num_pages: "1",
-			// });
-
 			if (data) {
 				// Replenish cache with the fetched data
 				// await cacheJobData("jobSummary", data);

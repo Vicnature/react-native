@@ -40,23 +40,20 @@ const Popularjobs = ({ query }) => {
 		try {
 			setIsLoading(true);
 			// Try to fetch from local cache first
-			console.log("attempting to fetch data from local cache");
+
 			const cachedData = await readData(
 				`fullDisintegratedJobDetails_${user.profession}`,
 			);
 			if (cachedData && cachedData !== null) {
-				console.log(
-					"POPULAR JOBS:disintegratedJobDetails fetched from local cache successfully",
-					cachedData[0],
-				);
 				setData(cachedData);
 				setIsLoading(false);
-				return; // Exit the function if cached data is found
+				return;
 			} else {
 				console.log(
 					"no job data in the local cache.Trying to fetch popular jobs from firestore database",
 				);
-				// const secondCache = await getDocFromFirestoreDb(`jobDetails`,`fullDisintegratedJobDetails_${user.profession}`);
+
+				// Try to fetch from Firestore database if no data is found within the local cache
 				const secondCache = await getDocFromFirestoreDb(
 					`jobDetailsCache`,
 					`fullDisintegratedJobDetails_${user?.profession}`,
@@ -74,8 +71,6 @@ const Popularjobs = ({ query }) => {
 				num_pages: "1",
 			});
 			if (data && data !== null) {
-				// Replenish cache with the fetched data
-				// await cacheJobData("jobSummary", data);
 				disintegrateJobData(
 					data,
 					`disintegratedJobDetails_${user.profession}`,

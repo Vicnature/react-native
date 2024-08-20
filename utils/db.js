@@ -2,6 +2,23 @@
 
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set } from "firebase/database";
+import {
+	collection,
+	addDoc,
+	deleteDoc,
+	setDoc,
+	doc,
+	getFirestore,
+	getDoc,
+	getDocFromCache,
+} from "firebase/firestore";
+import {
+	getAuth,
+	deleteUser,
+	reauthenticateWithCredential,
+	EmailAuthProvider,
+} from "firebase/auth";
+
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://firebase.google.com/docs/web/learn-more#config-object
 const firebaseConfig = {
@@ -52,17 +69,7 @@ export async function writeUserData({
 }
 
 // firebase db
-import {
-	collection,
-	addDoc,
-	deleteDoc,
-	setDoc,
-	doc,
-	getFirestore,
-	getDoc,
-	getDocFromCache,
-	deleteUser,
-} from "firebase/firestore";
+// Ensure this import is correct
 
 const firebaseConfig1 = {
 	apiKey: "AIzaSyCOUFugLKDEMuidZlngC2GUxfB41HNcItw",
@@ -116,7 +123,6 @@ export const Firestore = async (
 	}
 };
 
-
 export const FirebaseJobCache = async (data, documentName) => {
 	const app = initializeApp(firebaseConfig1);
 	const db = getFirestore(app);
@@ -163,15 +169,24 @@ export const getDocFromFirestoreDb = async (collectionName, documentName) => {
 	try {
 		const app = initializeApp(firebaseConfig1);
 		const db = getFirestore(app);
+
+		if (!collectionName || !documentName) {
+			throw new Error("Collection name and document name must be provided");
+		}
+
+		// Create a document reference
 		const docRef = doc(db, collectionName, documentName);
+
 		console.log(
 			`Fetching document ${documentName} from collection ${collectionName}`,
 		);
+
+		// Fetch the document snapshot
 		const docSnap = await getDoc(docRef);
 
 		if (docSnap.exists()) {
 			console.log(
-				`Found ${documentName} inside firestore database, within ${collectionName}`,
+				`Found ${documentName} inside Firestore database, within ${collectionName}`,
 			);
 			return docSnap.data();
 		} else {
@@ -186,18 +201,29 @@ export const getDocFromFirestoreDb = async (collectionName, documentName) => {
 	}
 };
 
+export const deleteDocFromFirestore = async (documentName) => {
+	try {
+		const app = initializeApp(firebaseConfig1);
+		const db = getFirestore(app);
+		const auth = getAuth(app);
+		const user = auth.currentUser;
+console.log("user being deleted is", user);
+		// Reauthenticate the user
+		const credential = EmailAuthProvider.credential(user.email, userPassword); // Replace userPassword with the user's actual password
+		await reauthenticateWithCredential(user, credential);
+		console.log("User reauthenticated");
 
-export const deleteDocFromFirestore=async(documentName)=>{
-	const app = initializeApp(firebaseConfig1);
-    const db = getFirestore(app);
-	const auth = getAuth();
-	const user = auth.currentUser;
-    try {
-		await deleteDoc(doc(db, "userProfiles",documentName));
-        console.log(documentName,"'s account successfully deleted from firebase!");
-		deleteUser(user)
-		console.log("user deleted from firebase auth dbase")
-    } catch (e) {
-        console.error("Error deleting document: ", e);
-    }
-}
+		// Delete the Firestore document
+		await deleteDoc(doc(db, "userProfiles", documentName));
+		console.log(documentName, "'s account successfully deleted from firebase!");
+
+		// Delete the user from Firebase Auth
+		await deleteUser(user);
+		console.log("User deleted from Firebase Auth database");
+
+		return true; // Indicate success
+	} catch (e) {
+		console.error("Error deleting document: ", e);
+		return false; // Indicate failure
+	}
+};
