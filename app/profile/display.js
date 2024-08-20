@@ -30,7 +30,7 @@ const Display = () => {
 	const [clickedLabel, setClickedLabel] = useState("");
 	const [newUser, setNewUser] = useState(null);
 	const navigation = useNavigation();
-	const { user, authenticate,signOut } = useContext(UserContext);
+	const { user, authenticate,deleteUser } = useContext(UserContext);
 
 	
 	useEffect(() => {
@@ -82,9 +82,6 @@ const Display = () => {
 				})}
 
 				<View style={styles.subHeading}>
-					<Text style={styles.subHeadingTitle} onPress={signOut}>
-						DELETE PROFILE
-					</Text>
 					<Text
 						style={styles.subHeadingInfo}
 						onPress={() => navigation.navigate("profile/index")}
@@ -206,8 +203,8 @@ const styles = StyleSheet.create({
 
 	subHeading: {
 		flexDirection: "row",
-		justifyContent: "space-between",
-		// alignItems: "center",
+		justifyContent: "center",
+		alignItems: "center",
 		paddingHorizontal: 20,
 		borderRadius: 10,
 		marginVertical: 20,
@@ -219,7 +216,8 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 	subHeadingInfo: {
-		color: "green",
+		color: COLORS.tertiary,
 		fontWeight: "bold",
+		fontSize:20
 	},
 });

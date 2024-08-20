@@ -15,8 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signOutFromFirebase } from "../utils/auth";
 import MenuModal from "../components/home/layout/MenuModal"; // Import the MenuModal component
 import { COLORS, icons } from "../constants";
-import { getDocFromFirestoreDb,deleteDocFromFirestore } from "../utils/db";
-// Create a context
+import { getDocFromFirestoreDb, deleteDocFromFirestore } from "../utils/db";
 export const UserContext = createContext();
 
 export const unstable_settings = {
@@ -33,7 +32,6 @@ const Layout = () => {
 		authenticate();
 	}, [firebaseUserId]);
 
-
 	useFocusEffect(
 		useCallback(() => {
 			authenticate();
@@ -46,11 +44,15 @@ const Layout = () => {
 			const userSession = await AsyncStorage.getItem("userSession");
 			if (userSession !== null) {
 				const user = JSON.parse(userSession);
-				console.log("found user session",user)
+				console.log("found user session", user);
 				setUser(user);
 				return;
-			}else{
-				navigation.navigate("profile/form")
+			} else {
+				console.log(
+					"no user session found in local storage.Currently checking firestore db for user",
+					firebaseUserId,
+				);
+				navigation.navigate("profile/form");
 			}
 			if (firebaseUserId) {
 				console.log("looking for user on firestore");
@@ -61,7 +63,6 @@ const Layout = () => {
 					setUser(doc);
 					navigation.navigate("index");
 				}
-
 			}
 		} catch (error) {
 			console.error("Error retrieving session: ", error);
@@ -69,13 +70,18 @@ const Layout = () => {
 	};
 
 	const signOut = async () => {
-		alert("You have signed out.Please log back in to view jobs.");
-		deleteDocFromFirestore(user.email)
-		signOutFromFirebase();
-		AsyncStorage.removeItem("userSession");
-		setUser({});
-		navigation.navigate("profile/form");
+		try {
+			alert("You have signed out.Please log back in to view jobs.");
+			signOutFromFirebase();
+			AsyncStorage.removeItem("userSession");
+			setUser({});
+			navigation.navigate("profile/form");
+		} catch (e) {
+			console.log("Failed to sign out the user,", e);
+			alert("Failed to sign you out,kindly try again later.");
+		}
 	};
+	
 
 	const toggleModal = () => {
 		setModalVisible(!modalVisible);
@@ -127,7 +133,8 @@ const Layout = () => {
 							headerStyle: { backgroundColor: "white" },
 							headerTintColor: "black",
 							headerLeft: () => {
-								if (Object.keys(user).length === 0 ) return (
+								if (Object.keys(user).length === 0)
+									return (
 										<View
 											style={{
 												width: "96%",
@@ -145,7 +152,7 @@ const Layout = () => {
 												ACCOUNT REGISTRATION AND LOGIN PAGE
 											</Text>
 										</View>
-									)
+									);
 								return (
 									<View
 										onPress={() => navigation.navigate("profile/display")}
@@ -158,7 +165,7 @@ const Layout = () => {
 										<Text
 											onPress={() => navigation.navigate("profile/display")}
 											style={{
-												color: "green",
+												color: COLORS.tertiary,
 												fontSize: 18,
 												fontWeight: "bold",
 											}}
@@ -168,10 +175,6 @@ const Layout = () => {
 									</View>
 								);
 							},
-							// headerRight:user ? (<Text>Back</Text>): HeaderRight
-							// headerRight:(()=>{
-							// 	return user?<Text>back</Text>:HeaderRight
-							// })
 						}}
 					/>
 					<Stack.Screen
@@ -207,7 +210,6 @@ const Layout = () => {
 							// headerRight: HeaderRight,
 						}}
 					/>
-					{/* Other Stack.Screen components */}
 				</Stack>
 				<MenuModal visible={modalVisible} onClose={toggleModal} />
 			</SafeAreaView>

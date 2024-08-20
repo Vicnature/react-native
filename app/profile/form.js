@@ -55,14 +55,13 @@ const AuthenticationPage = () => {
 			setLoading(true);
 			setMessage("Attempting to sign you in");
 			const signIn = await signInWithEmail(email, password);
-			console.log("signing in");
 			if (signIn && signIn !== null) {
-				setFirebaseUserId(email)
-				// setFirebaseUserId(email)
-				// navigate.navigate("index");
+				setFirebaseUserId(email);
+				console.log(
+					email,
+					"set as the firebase id.Waiting for redirection by the layout page.",
+				);
 			}
-			// await AsyncStorage.setItem("userSession", JSON.stringify(user));
-			setMessage("Failed to sign you in...");
 		} catch (error) {
 			setLoading(false);
 			console.log("Error while attempting to sign in with an email:", error);
@@ -70,14 +69,6 @@ const AuthenticationPage = () => {
 				"Failed to sign you in.Please try again with the correct credentials.",
 				error,
 			);
-		}
-	};
-	const handleGoogleAuthentication = async () => {
-		try {
-			authenticateWithGoogle();
-			// setMessage("attempting to sign you in...");
-		} catch (error) {
-			setMessage(error.message);
 		}
 	};
 

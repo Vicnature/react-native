@@ -28,7 +28,6 @@ import { FirebaseJobCache } from "../../utils/db";
 import { UserContext } from "../_layout";
 import { useContext } from "react";
 
-
 const JobDetails = () => {
 	// const params = useLocalSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
 	const route = useRoute();
@@ -52,12 +51,10 @@ const JobDetails = () => {
 	const [error, setError] = useState(null);
 	const { user } = useContext(UserContext);
 	useEffect(() => {
-		fetch();
-		// backupFetch();
+		fetchJobDetails();
 	}, []);
 
-	const fetch = async () => {
-		console.log("user's job preference is", job_preference);
+	const fetchJobDetails = async () => {
 		try {
 			setIsLoading(true);
 			console.log(
@@ -65,22 +62,16 @@ const JobDetails = () => {
 				id,
 				"'s job details from the local fileSystem cache",
 			);
-
 			const dataArray = [];
 			const cachedJobDetails =
 				job_preference == null
 					? await readData(`disintegratedJobDetails_${profession}_${id}`)
 					: await readData(
-							`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
+							`disintegratedJobDetails_${profession}_{job_preference}_${id}`,
 						);
 
 			if (cachedJobDetails) {
-				console.log(
-					"Details for this job are:",
-					Object.entries(cachedJobDetails),
-				);
 				dataArray.push(cachedJobDetails);
-				console.log("job highlights are of type:", typeof cachedJobDetails);
 				if (dataArray.length > 0) setData(dataArray);
 			} else {
 				throw new Error("No cached data found, triggering backup fetch");
@@ -103,14 +94,6 @@ const JobDetails = () => {
 			});
 			if (individualJobDetails && individualJobDetails !== null) {
 				setData(individualJobDetails);
-				console.log(
-					"job highlights",
-					Object.keys(individualJobDetails[0].job_highlights),
-				);
-				console.log(
-					"job highlights are of type:",
-					typeof individualJobDetails[0].job_highlights,
-				);
 				console.log("backup fetch used to get job details");
 			}
 			if (job_preference !== null) {
@@ -139,19 +122,18 @@ const JobDetails = () => {
 		}
 	};
 
-
 	const shareJobDetails = async () => {
 		try {
 			if (data && data != null) {
 				const result = await Share.share({
-					message:
-						`Checkout this job I have found on Job Finders Application !! \n ${data[0]?.job_apply_link}`,
+					message: `Checkout this job I have found on Job Finders Application !! \n ${data[0]?.job_apply_link}`,
 				});
 			}
 		} catch (e) {
 			console.log("Failed to share", e);
 		}
 	};
+
 	//delegates the display of specific job detail types(qualifications,responsibilities and about to the necessary components)
 	const displayTabContent = () => {
 		switch (activeTab) {

@@ -15,7 +15,6 @@ import { UserContext } from "./_layout";
 const Index = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const navigation = useNavigation();
-	// const [user, setUser] = useState({});
 	const [profession, setProfession] = useState("");
 	const [preferredJob, setPreferredJob] = useState("");
 	const router = useRouter();
@@ -24,13 +23,11 @@ const Index = () => {
 	useEffect(() => {
 		authenticate();
 		retrieveListOfCountires();
-		// userProfile();
 	}, []);
 
 	useFocusEffect(
 		useCallback(() => {
 			authenticate();
-			// fetchFromFirestore()
 		}, []),
 	);
 

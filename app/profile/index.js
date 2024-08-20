@@ -97,8 +97,6 @@ export default function ProfilePage() {
 			await Firestore({ ...values, email },"userProfiles",email);
 			await writeUserData({ ...values, email });
 			navigation.navigate("index");
-			// const db = await connectToDatabase();
-			// insertProfile(db, { ...values, email });
 		} catch (error) {
 			backupProfileSaver(values);
 			setLoading(false)
