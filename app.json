@@ -21,7 +21,11 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/24f15009-cc35-41ea-84ff-ffec2a403f90"
+      "url": "https://u.expo.dev/24f15009-cc35-41ea-84ff-ffec2a403f90",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
+      "releaseChannel": "main"
     },
     "android": {},
     "ios": {},
