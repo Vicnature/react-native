@@ -1,8 +1,8 @@
-#JOB FINDER APPLICATION
+# JOB FINDER APPLICATION
 This is a mobile app built with React Native to help users find jobs based on location, job type, and other preferences.
 
 ## Installation instructions
-git clone https://github.com/username/job-finder-app.git
+git clone https://github.com/Vicnature/react-native
 cd job-finder-app
 npm install
 npx react-native run-android # or run-ios
