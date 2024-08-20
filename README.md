@@ -3,9 +3,9 @@ This is a mobile app built with React Native to help users find jobs based on lo
 
 ## Installation instructions
 git clone https://github.com/Vicnature/react-native
-cd job-finder-app
+cd react-native
 npm install
-npx react-native run-android # or run-ios
+npx react-native run-android (or run-ios)
 
 ### OR
 
