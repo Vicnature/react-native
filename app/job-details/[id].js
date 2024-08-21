@@ -126,7 +126,7 @@ const JobDetails = () => {
 		try {
 			if (data && data != null) {
 				const result = await Share.share({
-					message: `Checkout this job I have found on Job Finders Application !! \n ${data[0]?.job_apply_link}`,
+					message: `Checkout this job I have found on Job Finder Application !! \n ${data[0]?.job_apply_link}`,
 				});
 				await FirebaseSharedAndAppliedJobs(user?.name,"SharedJobs",data[0]?.job_title)
 			}

@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { getDocFromFirestoreDb } from "../utils/db";
 import { UserContext } from "./_layout";
+import { usePushNotifications } from "../utils/notifications";
 const Index = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const navigation = useNavigation();

@@ -98,7 +98,6 @@ const Popularjobs = ({ query }) => {
 	const handleCardPress = async (item) => {
 		router.push(`/job-details/${item.job_id}?profession=${user?.profession}`);
 		setSelectedJob(item.job_id);
-		alert(item.job_title)
 		await FirebaseSharedAndAppliedJobs(user?.email,"ViewedJobs",item?.job_title,)
 	};
 

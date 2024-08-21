@@ -177,7 +177,7 @@ export default function ProfilePage() {
 					{loading && <ActivityIndicator size="large" color={COLORS.tertiary} />}
 						<Text style={globalStyles.formMessage}>{message}</Text>
 						<View style={globalStyles.Header}>
-							<Text style={globalStyles.HeaderText}>JOB FINDERS APPLICATION</Text>
+							<Text style={globalStyles.HeaderText}>JOB FINDER APPLICATION</Text>
 							<Text style={globalStyles.FormInstructions}>
 								Create your profile in order to view jobs.
 							</Text>

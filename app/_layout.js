@@ -105,7 +105,7 @@ const Layout = () => {
 					color: COLORS.tertiary,
 				}}
 			>
-				JOB FINDERS APPLICATION
+				JOB FINDER APPLICATION
 			</Text>
 		</TouchableOpacity>
 	);

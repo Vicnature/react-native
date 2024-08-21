@@ -26,7 +26,7 @@ const MenuModal = ({ visible, onClose }) => {
 			<View style={styles.modalContainer}>
 				<View style={styles.modalContent}>
 					<View style={styles.Header}>
-						<Text style={styles.HeaderText}>JOB FINDERS APPLICATION</Text>
+						<Text style={styles.HeaderText}>JOB FINDER APPLICATION</Text>
 						<Text style={styles.FormInstructions}>
 							Choose where you want to go
 						</Text>

@@ -81,13 +81,13 @@ const AuthenticationPage = () => {
 				{loading && <ActivityIndicator size="large" color={COLORS.tertiary} />}
 				<Text style={globalStyles.formMessage}>{message}</Text>
 				<View style={globalStyles.Header}>
-					<Text style={globalStyles.HeaderText}>JOB FINDERS APPLICATION</Text>
+					<Text style={globalStyles.HeaderText}>JOB FINDER APPLICATION</Text>
 					<Text style={globalStyles.FormInstructions}>
 						Create new Account or Login to an existing one
 					</Text>
 				</View>
 				{/* <View>
-				<Text  style={globalStyles.FormInstructions}>JOB FINDERS APPLICATION</Text>
+				<Text  style={globalStyles.FormInstructions}>JOB FINDER APPLICATION</Text>
 			</View> */}
 				<TextInput
 					autoComplete="email"
