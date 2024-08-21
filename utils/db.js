@@ -141,6 +141,24 @@ export const FirebaseJobCache = async (data, documentName) => {
 	}
 };
 
+export const FirebaseSharedAndAppliedJobs = async (data,collectionName, documentName) => {
+	const app = initializeApp(firebaseConfig1);
+	const db = getFirestore(app);
+	try {
+		const docRef = doc(db, collectionName, documentName);
+		await setDoc(docRef, {
+			jobApplications: data,
+		},{merge:true});
+		console.log(
+			documentName,
+			" successfully stored in google's firestore database",
+		);
+	} catch (e) {
+		console.error("Error adding document to google firestore database: ", e);
+	}
+};
+
+
 export const retrieveJobsFromFirestoreCache = async (firebaseDocumentName) => {
 	const app = initializeApp(firebaseConfig1);
 	const db = getFirestore(app);

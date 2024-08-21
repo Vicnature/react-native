@@ -11,8 +11,11 @@ import NearbyJobCard from "../../common/cards/nearby/NearbyJobCard";
 import { cacheJobData, getCachedJobs } from "../../../utils/cache";
 import { getDisintegratedJobDetails } from "../../../utils/sqlite";
 import { readData } from "../../../utils/sqlite";
-import { fetchData, disintegrateJobData } from "../../../hook/useFetch";
-import { getDocFromFirestoreDb } from "../../../utils/db";
+import {
+	fetchData,
+	disintegrateJobData,
+} from "../../../hook/useFetch";
+import { getDocFromFirestoreDb,FirebaseSharedAndAppliedJobs } from "../../../utils/db";
 import { saveData } from "../../../utils/sqlite";
 
 const Nearbyjobs = ({ query, job_preference, user }) => {
@@ -22,7 +25,7 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 	const router = useRouter();
 	useEffect(() => {
 		fetch();
-	}, [user,job_preference]);
+	}, [user, job_preference]);
 
 	const fetch = async () => {
 		try {
@@ -33,7 +36,9 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 			);
 			if (cachedData && cachedData !== null) {
 				console.log(
-					"NEARBY JOBS:fullDisintegratedJobDetails_2_",user?.profession," fetched from local cache successfully",
+					"NEARBY JOBS:fullDisintegratedJobDetails_2_",
+					user?.profession,
+					" fetched from local cache successfully",
 					Object.keys(cachedData[0]),
 				);
 				setData(cachedData);
@@ -47,7 +52,7 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 					"jobDetailsCache",
 					`fullDisintegratedJobDetails_2_${user?.profession}_${user?.job_preference}`,
 				);
-				if (secondCache && secondCache!==null) {
+				if (secondCache && secondCache !== null) {
 					setData(JSON.parse(secondCache.jobDetails));
 					setIsLoading(false);
 					return;
@@ -67,7 +72,7 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 				// const disintegrated=await disintegrateJobData(data,"fullDisintegratedJobDetails_2");
 				const disintegrated = await disintegrateJobData(
 					data,
-					`disintegratedJobDetails_${user?.profession}_${user.job_preference}`,
+					`disintegratedJobDetails_${user?.profession}_${user?.job_preference}`,
 					`fullDisintegratedJobDetails_2_${user?.profession}_${user?.job_preference}`,
 				);
 				if (disintegrated) setIsLoading(false);
@@ -75,6 +80,10 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 		} catch (error) {
 			console.error(error, "There was an error encountered when fetching data");
 		}
+	};
+
+	const handleCardPress = async (job_title) => {
+		await FirebaseSharedAndAppliedJobs(user?.name,"SharedJobs",job_title);
 	};
 
 	return (
@@ -100,12 +109,12 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 							<NearbyJobCard
 								job={job}
 								key={`nearby-job-${job.job_id}`}
-								handleNavigate={() =>
+								handleNavigate={() => {
 									router.push(
-										`/job-details/${job.job_id}?profession=${user?.profession}&job_preference=${user?.job_preference}`
-										,
-									)
-								}
+										`/job-details/${job.job_id}?profession=${user?.profession}&job_preference=${user?.job_preference}`,
+										handleCardPress(job?.job_title),
+									);
+								}}
 							/>
 						))
 				) : (

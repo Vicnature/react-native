@@ -20,6 +20,7 @@ import {
 	FirebaseJobCache,
 	retrieveJobsFromFirestoreCache,
 	getDocFromFirestoreDb,
+	FirebaseSharedAndAppliedJobs
 } from "../../../utils/db";
 import { getDisintegratedJobDetails } from "../../../utils/sqlite";
 import { readData } from "../../../utils/sqlite";
@@ -94,9 +95,11 @@ const Popularjobs = ({ query }) => {
 
 	const [selectedJob, setSelectedJob] = useState();
 
-	const handleCardPress = (item) => {
+	const handleCardPress = async (item) => {
 		router.push(`/job-details/${item.job_id}?profession=${user?.profession}`);
 		setSelectedJob(item.job_id);
+		alert(item.job_title)
+		await FirebaseSharedAndAppliedJobs(user?.email,"ViewedJobs",item?.job_title,)
 	};
 
 	return (

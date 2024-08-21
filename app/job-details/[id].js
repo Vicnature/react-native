@@ -24,7 +24,7 @@ import useFetch from "../../hook/useFetch";
 import { fetchData } from "../../hook/useFetch";
 import { cacheJobData, getCachedJobs } from "../../utils/cache";
 import { readData, saveData } from "../../utils/sqlite";
-import { FirebaseJobCache } from "../../utils/db";
+import { FirebaseJobCache,FirebaseSharedAndAppliedJobs } from "../../utils/db";
 import { UserContext } from "../_layout";
 import { useContext } from "react";
 
@@ -67,7 +67,7 @@ const JobDetails = () => {
 				job_preference == null
 					? await readData(`disintegratedJobDetails_${profession}_${id}`)
 					: await readData(
-							`disintegratedJobDetails_${profession}_{job_preference}_${id}`,
+							`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
 						);
 
 			if (cachedJobDetails) {
@@ -128,6 +128,7 @@ const JobDetails = () => {
 				const result = await Share.share({
 					message: `Checkout this job I have found on Job Finders Application !! \n ${data[0]?.job_apply_link}`,
 				});
+				await FirebaseSharedAndAppliedJobs(user?.name,"SharedJobs",data[0]?.job_title)
 			}
 		} catch (e) {
 			console.log("Failed to share", e);
