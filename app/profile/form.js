@@ -16,12 +16,12 @@ import {
 import {
 	signUpWithEmail,
 	signInWithEmail,
-	authenticateWithGoogle,
 } from "../../utils/auth";
 import { openDatabase } from "react-native-sqlite-storage";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS, icons, images, SIZES } from "../../constants";
 import { UserContext } from "../_layout";
+import * as SecureStore from "expo-secure-store";
 
 const AuthenticationPage = () => {
 	const [email, setEmail] = useState("");
@@ -36,8 +36,11 @@ const AuthenticationPage = () => {
 			setLoading(true);
 			setMessage("Attempting to Create your new account");
 			const signUp = await signUpWithEmail(email, password);
-			if (signUp && signUp !== null)
+			if (signUp) {
+				await SecureStore.setItemAsync("lastOpenedScreen", "profile/index");
+				await SecureStore.setItemAsync("email", email);
 				navigate.navigate("profile/index", { email: email });
+			}
 			alert(
 				"Congratulations !! You have successfully registered an account with us!!Kindly create your profile to help you connect with employers.",
 			);
@@ -47,6 +50,8 @@ const AuthenticationPage = () => {
 			setMessage(
 				"Error signing up.Please provide the correct credentials and try again",
 			);
+		}finally {
+			setLoading(false);
 		}
 	};
 
@@ -56,6 +61,7 @@ const AuthenticationPage = () => {
 			setMessage("Attempting to sign you in");
 			const signIn = await signInWithEmail(email, password);
 			if (signIn && signIn !== null) {
+				SecureStore.setItemAsync("lastOpenedScreen", "index");
 				setFirebaseUserId(email);
 				console.log(
 					email,

@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signOutFromFirebase } from "../utils/auth";
 import MenuModal from "../components/home/layout/MenuModal"; // Import the MenuModal component
 import { COLORS, icons } from "../constants";
-import { getDocFromFirestoreDb, deleteDocFromFirestore } from "../utils/db";
+import { getDocFromFirestoreDb } from "../utils/db";
 import * as SecureStore from "expo-secure-store";
 export const UserContext = createContext();
 
@@ -25,53 +25,44 @@ const Layout = () => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const navigation = useNavigation();
 	const [lastOpenedScreen, setLastOpenedScreen] = useState("");
+
 	useEffect(() => {
 		authenticate();
 	}, [firebaseUserId]);
 
-	useEffect(() => {
-		goToLastOpenedScreen();
-	}, []);
-
-	useFocusEffect(
-		useCallback(() => {
-			authenticate();
-		}, []),
-	);
+	// useFocusEffect(
+	// 	useCallback(() => {
+	// 		authenticate();
+	// 	}, []),
+	// );
 
 	const unstable_settings = {
 		initialRouteName: lastOpenedScreen !== null ? lastOpenedScreen : "index",
 	};
 
-	const goToLastOpenedScreen = async () => {
+	const goToLastOpenedScreen = async (lastScreen) => {
 		try {
-			let lastScreen = await SecureStore.getItemAsync("lastOpenedScreen");
 			if (lastScreen) {
+				setFirebaseUserId(lastScreen);
 				navigation.navigate(lastScreen);
-				// setLastOpenedScreen(lastScreen);
 			}
 		} catch (e) {
-			console.error("failed to navigate to last opened screen",e)
+			console.error("failed to navigate to last opened screen", e);
 			navigation.navigate("index");
 		}
 	};
+
 	const authenticate = async () => {
 		try {
 			console.log("looking for user session");
 			const userSession = await AsyncStorage.getItem("userSession");
+			const lastScreen = await SecureStore.getItemAsync("lastOpenedScreen");
+			//Check if a session exists.Redirect to home page if it does.
 			if (userSession !== null) {
 				const user = JSON.parse(userSession);
 				console.log("found user session", user);
 				setUser(user);
-				return;
-			} else {
-				console.log(
-					"no user session found in local storage.Currently checking firestore db for user",
-					firebaseUserId,
-				);
-				navigation.navigate("profile/form");
-			}
-			if (firebaseUserId) {
+			} else if (firebaseUserId) {
 				console.log("looking for user on firestore");
 				const doc = await getDocFromFirestoreDb("userProfiles", firebaseUserId);
 				if (doc && doc !== null) {
@@ -80,7 +71,11 @@ const Layout = () => {
 					setUser(doc);
 					navigation.navigate("index");
 				}
+			} else {
+				console.log("User does not have a session nor a firebaseUserId");
+				navigation.navigate("profile/form");
 			}
+			if (lastScreen) goToLastOpenedScreen(lastScreen);
 		} catch (error) {
 			console.error("Error retrieving session: ", error);
 		}
@@ -131,7 +126,7 @@ const Layout = () => {
 			value={{ user, signOut, authenticate, setFirebaseUserId }}
 		>
 			<SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
-				<Stack initialRouteName={lastOpenedScreen}>
+				<Stack initialRouteName={lastOpenedScreen || "index"}>
 					<Stack.Screen
 						name="index"
 						options={{
@@ -165,7 +160,7 @@ const Layout = () => {
 													fontWeight: "bold",
 												}}
 											>
-												ACCOUNT REGISTRATION AND LOGIN PAGE
+												USER PROFILE CREATION PAGE
 											</Text>
 										</View>
 									);
@@ -179,7 +174,11 @@ const Layout = () => {
 										}}
 									>
 										<Text
-											onPress={() => navigation.navigate("profile/display")}
+											onPress={async() => {
+												navigation.navigate("profile/display");
+												SecureStore.setItemAsync("lastOpenedScreen", "profile/display");
+
+											}}
 											style={{
 												color: COLORS.tertiary,
 												fontSize: 18,
