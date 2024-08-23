@@ -5,15 +5,18 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { UserContext } from "../../../app/_layout"; // Import the UserContext
 import { useNavigation } from "expo-router";
 import { COLORS } from "../../../constants";
+import * as SecureStore from "expo-secure-store";
 
 const MenuModal = ({ visible, onClose }) => {
 	const navigate = useNavigation();
 	const { signOut } = useContext(UserContext);
-	const handleMenuOptionClick = (option) => {
+	const handleMenuOptionClick = async (option) => {
 		onClose();
-		if (option === "home") navigate.navigate("index");
-		if (option === "myProfile") navigate.navigate("profile/display");
-		if (option === "signOut") signOut();
+		if (option === "index") navigate.navigate("index");
+		if (option === "profile/display") navigate.navigate("profile/display");
+		if (option === "profile/form") signOut();
+		await SecureStore.setItemAsync("lastOpenedScreen", option);
+		console.log("last opened screen set to",option)
 	};
 
 	return (
@@ -33,19 +36,19 @@ const MenuModal = ({ visible, onClose }) => {
 					</View>
 					<TouchableOpacity
 						style={styles.optionButton}
-						onPress={() => handleMenuOptionClick("home")}
+						onPress={() => handleMenuOptionClick("index")}
 					>
 						<Text style={styles.optionText}>HOME PAGE</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={styles.optionButton}
-						onPress={() => handleMenuOptionClick("myProfile")}
+						onPress={() => handleMenuOptionClick("profile/display")}
 					>
 						<Text style={styles.optionText}>YOUR PROFILE</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={styles.optionButton}
-						onPress={() => handleMenuOptionClick("signOut")}
+						onPress={() => handleMenuOptionClick("profile/form")}
 					>
 						<Text style={styles.optionText}>SIGN OUT</Text>
 					</TouchableOpacity>

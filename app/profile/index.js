@@ -24,7 +24,7 @@ import { writeUserData } from "../../utils/db";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Firestore } from "../../utils/db";
 import { useFocusEffect } from "@react-navigation/native";
-import LoaderKit from "react-native-loader-kit";
+import { v4 as uuidv4 } from 'uuid'
 import { Platform } from 'react-native';
 import { UserContext } from "../_layout";
 export default function ProfilePage() {
@@ -96,6 +96,8 @@ export default function ProfilePage() {
 			);
 			await Firestore({ ...values, email },"userProfiles",email);
 			await writeUserData({ ...values, email });
+			const authToken = uuidv4()
+			console.log(authToken,"successfully saved to sharedPreferences.")
 			navigation.navigate("index");
 		} catch (error) {
 			backupProfileSaver(values);

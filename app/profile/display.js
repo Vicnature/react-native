@@ -17,6 +17,8 @@ import {
 import { COLORS, SIZES } from "../../constants";
 import { useNavigation } from "expo-router";
 import CustomModal from "./modal"; // Import the Modal component
+import * as SecureStore from "expo-secure-store";
+
 const customLabels = {
 	JOB_PREFERENCE: "Job Preference",
 	RESUME_LINK: "Resume Link",
@@ -30,11 +32,10 @@ const Display = () => {
 	const [clickedLabel, setClickedLabel] = useState("");
 	const [newUser, setNewUser] = useState(null);
 	const navigation = useNavigation();
-	const { user, authenticate,deleteUser } = useContext(UserContext);
+	const { user, authenticate, deleteUser } = useContext(UserContext);
 
-	
 	useEffect(() => {
-		setIsLoading(true)
+		setIsLoading(true);
 		authenticate();
 		if (user && user.name) {
 			setIsLoading(false);
@@ -75,7 +76,9 @@ const Display = () => {
 									source={require("../../assets/icons/left.png")}
 									style={styles.arrow_icon}
 								/>
-								<Text style={{color:COLORS.tertiary,fontWeight:"bold",}}>Edit</Text>
+								<Text style={{ color: COLORS.tertiary, fontWeight: "bold" }}>
+									Edit
+								</Text>
 							</TouchableOpacity>
 						</View>
 					);
@@ -84,7 +87,10 @@ const Display = () => {
 				<View style={styles.subHeading}>
 					<Text
 						style={styles.subHeadingInfo}
-						onPress={() => navigation.navigate("profile/index")}
+						onPress={async () => {
+							navigation.navigate("profile/index");
+							await SecureStore.setItemAsync("lastOpenedScreen", "profile/index")
+						}}
 					>
 						EDIT EVERYTHING
 					</Text>
@@ -139,7 +145,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 		borderBottomColor: COLORS.secondary,
 		borderBottomWidth: 0.3,
-		flexWrap:"wrap"
+		flexWrap: "wrap",
 	},
 	profileDetails: {
 		justifyContent: "space-between",
@@ -218,6 +224,6 @@ const styles = StyleSheet.create({
 	subHeadingInfo: {
 		color: COLORS.tertiary,
 		fontWeight: "bold",
-		fontSize:20
+		fontSize: 20,
 	},
 });

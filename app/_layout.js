@@ -16,21 +16,22 @@ import { signOutFromFirebase } from "../utils/auth";
 import MenuModal from "../components/home/layout/MenuModal"; // Import the MenuModal component
 import { COLORS, icons } from "../constants";
 import { getDocFromFirestoreDb, deleteDocFromFirestore } from "../utils/db";
+import * as SecureStore from "expo-secure-store";
 export const UserContext = createContext();
-
-export const unstable_settings = {
-	initialRouteName: "index",
-};
 
 const Layout = () => {
 	const [user, setUser] = useState({});
 	const [firebaseUserId, setFirebaseUserId] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
 	const navigation = useNavigation();
-
+	const [lastOpenedScreen, setLastOpenedScreen] = useState("");
 	useEffect(() => {
 		authenticate();
 	}, [firebaseUserId]);
+
+	useEffect(() => {
+		goToLastOpenedScreen();
+	}, []);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -38,6 +39,22 @@ const Layout = () => {
 		}, []),
 	);
 
+	const unstable_settings = {
+		initialRouteName: lastOpenedScreen !== null ? lastOpenedScreen : "index",
+	};
+
+	const goToLastOpenedScreen = async () => {
+		try {
+			let lastScreen = await SecureStore.getItemAsync("lastOpenedScreen");
+			if (lastScreen) {
+				navigation.navigate(lastScreen);
+				// setLastOpenedScreen(lastScreen);
+			}
+		} catch (e) {
+			console.error("failed to navigate to last opened screen",e)
+			navigation.navigate("index");
+		}
+	};
 	const authenticate = async () => {
 		try {
 			console.log("looking for user session");
@@ -81,7 +98,6 @@ const Layout = () => {
 			alert("Failed to sign you out,kindly try again later.");
 		}
 	};
-	
 
 	const toggleModal = () => {
 		setModalVisible(!modalVisible);
@@ -115,7 +131,7 @@ const Layout = () => {
 			value={{ user, signOut, authenticate, setFirebaseUserId }}
 		>
 			<SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
-				<Stack initialRouteName="index">
+				<Stack initialRouteName={lastOpenedScreen}>
 					<Stack.Screen
 						name="index"
 						options={{
