@@ -20,7 +20,7 @@ import {
 	FirebaseJobCache,
 	retrieveJobsFromFirestoreCache,
 	getDocFromFirestoreDb,
-	FirebaseSharedAndAppliedJobs,
+	FirebaseAppliedJobs,
 } from "../../../utils/db";
 import { getDisintegratedJobDetails } from "../../../utils/sqlite";
 import { readData } from "../../../utils/sqlite";
@@ -43,9 +43,7 @@ const Popularjobs = ({ query }) => {
 			setIsLoading(true);
 			// Try to fetch from local cache first
 
-			const cachedData = await readData(
-				`fullDisintegratedJobDetails_${user.profession}`,
-			);
+			const cachedData = await readData(`fullDisintegratedJobDetails`);
 			if (cachedData && cachedData !== null) {
 				setData(cachedData);
 				setIsLoading(false);
@@ -58,7 +56,7 @@ const Popularjobs = ({ query }) => {
 				// Try to fetch from Firestore database if no data is found within the local cache
 				const secondCache = await getDocFromFirestoreDb(
 					`jobDetailsCache`,
-					`fullDisintegratedJobDetails_${user?.profession}`,
+					`fullDisintegratedJobDetails`,
 				);
 				if (secondCache && secondCache !== null) {
 					setData(JSON.parse(secondCache.jobDetails));
@@ -75,8 +73,8 @@ const Popularjobs = ({ query }) => {
 			if (data && data !== null) {
 				disintegrateJobData(
 					data,
-					`disintegratedJobDetails_${user.profession}`,
-					`fullDisintegratedJobDetails_${user.profession}`,
+					`disintegratedJobDetails`,
+					`fullDisintegratedJobDetails`,
 				);
 				setData(data);
 				setIsLoading(false);
@@ -98,12 +96,8 @@ const Popularjobs = ({ query }) => {
 
 	const handleCardPress = async (item) => {
 		router.push(`/job-details/${item.job_id}?profession=${user?.profession}`);
+		await FirebaseAppliedJobs(false, `ViewedPopularJobs/${item?.job_id}`);
 		setSelectedJob(item.job_id);
-		await FirebaseSharedAndAppliedJobs(
-			user?.email,
-			"ViewedJobs",
-			item?.job_title,
-		);
 	};
 
 	return (

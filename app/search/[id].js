@@ -35,7 +35,7 @@ const JobSearch = () => {
 		setSearchLoader(true);
 		setSearchResult([]);
 		// const rapidApiKey = "a8eff050e5mshf564edb900d38efp102487jsnd71a7c0d6bd6";
-		const rapidApiKey = "0214c3b224mshe9810495944a8e3p129dfbjsnd2f02dc82f5f";
+		const rapidApiKey = "98330f246dmsh7fe897d5a80effep17be06jsnef75fc79a0d1";
 
 		try {
 			const options = {

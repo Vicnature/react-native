@@ -1,7 +1,7 @@
 /** @format */
 
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, runTransaction } from "firebase/database";
 import {
 	collection,
 	addDoc,
@@ -141,24 +141,6 @@ export const FirebaseJobCache = async (data, documentName) => {
 	}
 };
 
-export const FirebaseSharedAndAppliedJobs = async (data,collectionName, documentName) => {
-	const app = initializeApp(firebaseConfig1);
-	const db = getFirestore(app);
-	try {
-		const docRef = doc(db, collectionName, documentName);
-		await setDoc(docRef, {
-			jobApplications: data,
-		},{merge:true});
-		console.log(
-			documentName,
-			" successfully stored in google's firestore database",
-		);
-	} catch (e) {
-		console.error("Error adding document to google firestore database: ", e);
-	}
-};
-
-
 export const retrieveJobsFromFirestoreCache = async (firebaseDocumentName) => {
 	const app = initializeApp(firebaseConfig1);
 	const db = getFirestore(app);
@@ -225,7 +207,7 @@ export const deleteDocFromFirestore = async (documentName) => {
 		const db = getFirestore(app);
 		const auth = getAuth(app);
 		const user = auth.currentUser;
-console.log("user being deleted is", user);
+		console.log("user being deleted is", user);
 		// Reauthenticate the user
 		const credential = EmailAuthProvider.credential(user.email, userPassword); // Replace userPassword with the user's actual password
 		await reauthenticateWithCredential(user, credential);
@@ -243,5 +225,44 @@ console.log("user being deleted is", user);
 	} catch (e) {
 		console.error("Error deleting document: ", e);
 		return false; // Indicate failure
+	}
+};
+
+export async function LikedJobs(collectionName, likedJob) {
+	console.log("Liking the job on google realtime database");
+	const db = getDatabase();
+	const writeToRealTimeDb = await set(
+		ref(db, `${collectionName}/${likedJob}`),
+		{
+			numberOfLikes: 1,
+		},
+	);
+
+	if (writeToRealTimeDb) {
+		const NewNumberOfLikes = ref(db, `${collectionName}/${likedJob}`);
+		onValue(NewNumberOfLikes, (snapshot) => {
+			const data = snapshot.val();
+			updateStarCount(postElement, data);
+		});
+	}
+}
+
+export const FirebaseAppliedJobs = async (alreadyApplied, documentName) => {
+	const db = getDatabase();
+	const jobRef = ref(db, documentName);
+
+	try {
+		await runTransaction(jobRef, (job) => {
+			if (job) {
+				if (!alreadyApplied) {
+					// User has not clicked the the job application link yet, so add the application
+					job.likeCount = (job.likeCount || 0) + 1;
+				}
+				return job;
+			}
+			return { likeCount: 1 }; // Initialize likeCount if job does not exist
+		});
+	} catch (e) {
+		console.error("Error updating like count in Realtime Database: ", e);
 	}
 };

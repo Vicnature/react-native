@@ -57,7 +57,7 @@ const Index = () => {
 							}
 						}}
 					/>
-					<Popularjobs query="high salary" user={user} />
+					<Popularjobs query="7 figure" user={user} />
 					<Nearbyjobs
 						query={profession}
 						job_preference={preferredJob}

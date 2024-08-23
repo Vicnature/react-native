@@ -15,7 +15,7 @@ import {
 	fetchData,
 	disintegrateJobData,
 } from "../../../hook/useFetch";
-import { getDocFromFirestoreDb,FirebaseSharedAndAppliedJobs } from "../../../utils/db";
+import { getDocFromFirestoreDb,FirebaseAppliedJobs } from "../../../utils/db";
 import { saveData } from "../../../utils/sqlite";
 
 const Nearbyjobs = ({ query, job_preference, user }) => {
@@ -82,8 +82,8 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 		}
 	};
 
-	const handleCardPress = async (job_title) => {
-		await FirebaseSharedAndAppliedJobs(user?.name,"SharedJobs",job_title);
+	const handleCardPress = async (job_id) => {
+		await FirebaseAppliedJobs(false,`ViewedJobs/${job_id}`);
 	};
 
 	return (
@@ -112,7 +112,7 @@ const Nearbyjobs = ({ query, job_preference, user }) => {
 								handleNavigate={() => {
 									router.push(
 										`/job-details/${job.job_id}?profession=${user?.profession}&job_preference=${user?.job_preference}`,
-										handleCardPress(job?.job_title),
+										handleCardPress(job?.job_id),
 									);
 								}}
 							/>

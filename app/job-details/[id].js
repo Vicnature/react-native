@@ -24,10 +24,10 @@ import useFetch from "../../hook/useFetch";
 import { fetchData } from "../../hook/useFetch";
 import { cacheJobData, getCachedJobs } from "../../utils/cache";
 import { readData, saveData } from "../../utils/sqlite";
-import { FirebaseJobCache,FirebaseSharedAndAppliedJobs } from "../../utils/db";
+import { FirebaseJobCache, FirebaseSharedAndAppliedJobs } from "../../utils/db";
 import { UserContext } from "../_layout";
 import { useContext } from "react";
-
+import { getDatabase, ref, onValue } from "firebase/database";
 const JobDetails = () => {
 	// const params = useLocalSearchParams(); //get all parameters in the search string.Will help retrieve the id of the job clicked
 	const route = useRoute();
@@ -40,20 +40,19 @@ const JobDetails = () => {
 	const [refreshing, setRefreshing] = useState(false);
 	const tabs = ["About", "Qualifications", "Responsibilities"];
 	const [activeTab, setActiveTab] = useState(tabs[0]);
+	const [data, setData] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const { user } = useContext(UserContext);
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
 		fetch();
 		setRefreshing(false);
 	});
-
-	const [data, setData] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
-	const { user } = useContext(UserContext);
 	useEffect(() => {
 		fetchJobDetails();
 	}, []);
-
+	
 	const fetchJobDetails = async () => {
 		try {
 			setIsLoading(true);
@@ -65,7 +64,7 @@ const JobDetails = () => {
 			const dataArray = [];
 			const cachedJobDetails =
 				job_preference == null
-					? await readData(`disintegratedJobDetails_${profession}_${id}`)
+					? await readData(`disintegratedJobDetails_${id}`)
 					: await readData(
 							`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
 						);
@@ -99,11 +98,11 @@ const JobDetails = () => {
 			if (job_preference !== null) {
 				await saveData(
 					JSON.stringify(individualJobDetails),
-					`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
+					`disintegratedJobDetails_${id}`,
 				);
 				await FirebaseJobCache(
 					individualJobDetails,
-					`disintegratedJobDetails_${profession}_${job_preference}_${id}`,
+					`disintegratedJobDetails_${id}`,
 				);
 				setIsLoading(false);
 			} else {
@@ -128,7 +127,11 @@ const JobDetails = () => {
 				const result = await Share.share({
 					message: `Checkout this job I have found on Job Finder Application !! \n ${data[0]?.job_apply_link}`,
 				});
-				await FirebaseSharedAndAppliedJobs(user?.name,"SharedJobs",data[0]?.job_title)
+				await FirebaseSharedAndAppliedJobs(
+					user?.name,
+					"SharedJobs",
+					data[0]?.job_title,
+				);
 			}
 		} catch (e) {
 			console.log("Failed to share", e);
@@ -236,7 +239,7 @@ const JobDetails = () => {
 				{/* can be clicked to take you the job's application page */}
 				{data && (
 					<JobFooter
-						// job={data[0].job_id}
+						job_id={data[0]?.job_id}
 						url={
 							data[0]?.job_apply_link
 								? data[0]?.job_apply_link

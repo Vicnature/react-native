@@ -30,12 +30,6 @@ const Layout = () => {
 		authenticate();
 	}, [firebaseUserId]);
 
-	// useFocusEffect(
-	// 	useCallback(() => {
-	// 		authenticate();
-	// 	}, []),
-	// );
-
 	const unstable_settings = {
 		initialRouteName: lastOpenedScreen !== null ? lastOpenedScreen : "index",
 	};
@@ -57,24 +51,47 @@ const Layout = () => {
 			console.log("looking for user session");
 			const userSession = await AsyncStorage.getItem("userSession");
 			const lastScreen = await SecureStore.getItemAsync("lastOpenedScreen");
-			//Check if a session exists.Redirect to home page if it does.
+
+			// Check if a session exists. Redirect to the home page if it does.
 			if (userSession !== null) {
-				const user = JSON.parse(userSession);
+				let user = JSON.parse(userSession);
+
+				// Convert all string values in the user object to uppercase
+				user = Object.fromEntries(
+					Object.entries(user).map(([key, value]) => {
+						if (typeof value === "string") {
+							return [key, value.toUpperCase()];
+						}
+						return [key, value];
+					}),
+				);
+
 				console.log("found user session", user);
 				setUser(user);
 			} else if (firebaseUserId) {
 				console.log("looking for user on firestore");
 				const doc = await getDocFromFirestoreDb("userProfiles", firebaseUserId);
 				if (doc && doc !== null) {
-					console.log("found user on firestore", doc);
-					AsyncStorage.setItem("userSession", JSON.stringify(doc));
-					setUser(doc);
+					// Convert all string values in the doc object to uppercase
+					const upperCaseDoc = Object.fromEntries(
+						Object.entries(doc).map(([key, value]) => {
+							if (typeof value === "string") {
+								return [key, value.toUpperCase()];
+							}
+							return [key, value];
+						}),
+					);
+
+					console.log("found user on firestore", upperCaseDoc);
+					AsyncStorage.setItem("userSession", JSON.stringify(upperCaseDoc));
+					setUser(upperCaseDoc);
 					navigation.navigate("index");
 				}
 			} else {
 				console.log("User does not have a session nor a firebaseUserId");
 				navigation.navigate("profile/form");
 			}
+
 			if (lastScreen) goToLastOpenedScreen(lastScreen);
 		} catch (error) {
 			console.error("Error retrieving session: ", error);
@@ -174,10 +191,12 @@ const Layout = () => {
 										}}
 									>
 										<Text
-											onPress={async() => {
+											onPress={async () => {
 												navigation.navigate("profile/display");
-												SecureStore.setItemAsync("lastOpenedScreen", "profile/display");
-
+												SecureStore.setItemAsync(
+													"lastOpenedScreen",
+													"profile/display",
+												);
 											}}
 											style={{
 												color: COLORS.tertiary,

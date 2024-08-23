@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     justifyContent: "space-between",
     alignItems: "center",
-    flexDirection: "row",
+    flexDirection: "column",
   },
   likeBtn: {
     width: 55,
@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  Applications:{
+    
+  },
   likeBtnImage: {
     width: "40%",
     height: "40%",
@@ -32,9 +35,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FE7654",
     height: "100%",
+    width:"100%",
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: SIZES.medium,
+    marginTop: SIZES.medium,
     borderRadius: SIZES.medium,
     padding:15,
   },

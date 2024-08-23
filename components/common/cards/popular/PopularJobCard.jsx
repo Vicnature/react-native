@@ -1,11 +1,24 @@
 /** @format */
 
 import { View, Text, TouchableOpacity, Image } from "react-native";
-
+import { useEffect, useState } from "react";
 import styles from "./popularjobcard.style";
 import { checkImageURL } from "../../../../utils"; //utility function for checking  availability of company logo.Shows a default image if its absent
+import { getDatabase, ref, onValue } from "firebase/database";
 
 const PopularJobCard = ({ item, selectedJob, handleCardPress }) => {
+	const [views, setViews] = useState(0);
+	useEffect(() => {
+		const db = getDatabase();
+		const jobRef = ref(db, `ViewedPopularJobs/${item?.job_id}`);
+		onValue(jobRef, (snapshot) => {
+			const data = snapshot.val();
+			if (data) {
+				setViews(data.likeCount || 0);
+			}
+		});
+		// return () => unsubscribe();
+	}, [item]);
 	return (
 		<TouchableOpacity
 			style={styles.container(selectedJob, item)}
@@ -25,13 +38,13 @@ const PopularJobCard = ({ item, selectedJob, handleCardPress }) => {
 
 				{/* employer's name */}
 			</TouchableOpacity>
-			<Text style={styles.companyName} numberOfLines={1}>
-				{item.employer_name}
+			<Text style={styles.companyName} numberOfLines={2}>
+				{item.employer_name} {'\n'}(viewed:{views} times)
 			</Text>
 
 			{/* job title */}
 			<View style={styles.infoContainer}>
-				<Text style={styles.jobName(selectedJob, item)} numberOfLines={1}>
+				<Text style={styles.jobName(selectedJob, item)} numberOfLines={5}>
 					{item.job_title}
 				</Text>
 

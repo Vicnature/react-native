@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
     marginTop: 3,
     textTransform: "capitalize",
+    flexDirection:"row",
   },
 });
 
