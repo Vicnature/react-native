@@ -30,15 +30,15 @@ npx create-expo-app -e with-router
 ```
 
 ## 📝 Notes
--[React Native](https://reactnative.dev/)
--[Expo](https://docs.expo.dev/versions/latest/sdk/securestore/)
+- [React Native](https://reactnative.dev/)
+- [Expo](https://docs.expo.dev/versions/latest/sdk/securestore/)
 - [Expo Router: Docs](https://docs.expo.dev/router/introduction/)
-- -[Axios](https://medium.com/@menahilmahi144/get-and-post-api-using-axios-2e3e051f0c61)
+- [Axios](https://medium.com/@menahilmahi144/get-and-post-api-using-axios-2e3e051f0c61)
 - [React-Native-shared-Preferences](https://www.npmjs.com/package/react-native-shared-preferences)
 - [Expo SecureStore](https://docs.expo.dev/versions/latest/sdk/securestore/)
--[Expo SQLite](https://docs.expo.dev/versions/latest/sdk/sqlite/)
--[Expo FileSystem](https://docs.expo.dev/versions/latest/sdk/filesystem/#createfileasyncparenturi-filename-mimetype)
--[AsyncStorage](https://reactnative.dev/docs/asyncstorage)
+- [Expo SQLite](https://docs.expo.dev/versions/latest/sdk/sqlite/)
+- [Expo FileSystem](https://docs.expo.dev/versions/latest/sdk/filesystem/#createfileasyncparenturi-filename-mimetype)
+- [AsyncStorage](https://reactnative.dev/docs/asyncstorage)
 
 
 ## Contact information
