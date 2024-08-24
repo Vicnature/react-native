@@ -9,7 +9,7 @@ This is a mobile app built with React Native to help users find jobs based on lo
 
 ### OR
 
-- Download Expo Go from Play Store for Android & from App store from iOS
+- Download Expo Go from Play Store for Android (https://play.google.com/store/apps/details?id=host.exp.exponent) & from App store from iOS 
 - LOGIN using the following credential:
         - Email: group5devs@gmail.com
         - Password: group5@12345
