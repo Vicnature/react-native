@@ -13,7 +13,8 @@ This is a mobile app built with React Native to help users find jobs based on lo
 - LOGIN using the following credential:
         - Email: group5devs@gmail.com
         - Password: group5@12345
--Click "GROUP 5 JOB FINDER APPLICATION"(under projects.This option will only show after logging in with the above credentials)
+
+  -Click "GROUP 5 JOB FINDER APPLICATION"(under projects.This option will only show after logging in with the above credentials)
 
 ## Technologies used
 -> React Native -> Expo -> Expo SQLite -> Firebase -> Expo SecureStore(a more secure version of react-native-shared-preferences) -> Axios->react-native-file-system-storage
