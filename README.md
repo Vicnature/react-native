@@ -37,12 +37,12 @@ npx create-expo-app -e with-router
 - [React-Native-shared-Preferences](https://www.npmjs.com/package/react-native-shared-preferences)
 - [Expo SecureStore](https://docs.expo.dev/versions/latest/sdk/securestore/)
 - [Expo SQLite](https://docs.expo.dev/versions/latest/sdk/sqlite/)
-- [Expo FileSystem](https://docs.expo.dev/versions/latest/sdk/filesystem/#createfileasyncparenturi-filename-mimetype)
-- [AsyncStorage](https://reactnative.dev/docs/asyncstorage)
+- [Expo FileSystem Storage](https://docs.expo.dev/versions/latest/sdk/filesystem/#createfileasyncparenturi-filename-mimetype)
+- [React Native AsyncStorage](https://reactnative.dev/docs/asyncstorage)
 
 
 ## Contact information
 - naylowreagan@gmail.com
--ombebavictor22@gmail.com
--shawnndeto@gmail.com
--titusobwaka@gmail.com
+- ombebavictor22@gmail.com
+- shawnndeto@gmail.com
+- titusobwaka@gmail.com
